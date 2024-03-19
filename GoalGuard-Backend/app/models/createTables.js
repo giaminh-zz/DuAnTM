@@ -137,26 +137,40 @@ const createTables = async () => {
         )
     `);
 
-    console.log('Table "tournament_results" created or already exists.');
+        console.log('Table "tournament_results" created or already exists.');
 
-    // Tạo bảng "bookings " nếu chưa tồn tại
-    await db.execute(`
-    CREATE TABLE IF NOT EXISTS bookings (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        court_id INT NOT NULL,
-        booking_date DATE NOT NULL,
-        start_time TIME NOT NULL,
-        end_time TIME NOT NULL,
-        payment_method VARCHAR(255) NOT NULL,
-        total_amount DECIMAL(10, 2) NOT NULL,
-        status VARCHAR(255) DEFAULT 'pending', -- Tình trạng đặt sân (ví dụ: pending, confirmed, cancelled)
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (court_id) REFERENCES courts(id)
-    
-`);
+        // Tạo bảng "bookings " nếu chưa tồn tại
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS bookings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                court_id INT NOT NULL,
+                booking_date DATE NOT NULL,
+                start_time TIME NOT NULL,
+                end_time TIME NOT NULL,
+                payment_method VARCHAR(255) NOT NULL,
+                total_amount DECIMAL(10, 2) NOT NULL,
+                status VARCHAR(255) DEFAULT 'pending', -- Tình trạng đặt sân (ví dụ: pending, confirmed, cancelled)
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                FOREIGN KEY (court_id) REFERENCES courts(id)  
+        `);
 
-console.log('Table "bookings" created or already exists.');
+        console.log('Table "bookings" created or already exists.');
+
+        // Tạo bảng "orders" nếu chưa tồn tại
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                product_id INT NOT NULL,
+                quantity INT NOT NULL,
+                total_price DECIMAL(10, 2) NOT NULL,
+                payment_method VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            `);
+
+        console.log('Table "orders" created or already exists.');
 
     } catch (error) {
         console.error('Error creating tables:', error);
