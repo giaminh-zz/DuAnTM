@@ -34,6 +34,46 @@ const createTables = async () => {
 
         console.log('Table "password_reset_tokens" created or already exists.');
 
+        // Tạo bảng field_types nếu chưa tồn tại
+        await db.execute(`
+         CREATE TABLE IF NOT EXISTS field_types (
+             id INT AUTO_INCREMENT PRIMARY KEY,
+             type VARCHAR(255) NOT NULL,
+             status VARCHAR(255) DEFAULT 'active'
+         )
+     `);
+
+        console.log('Table "field_types" created or already exists.');
+
+        // Tạo bảng "areas" nếu chưa tồn tại
+        await db.execute(`
+                CREATE TABLE IF NOT EXISTS areas (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    status VARCHAR(255) DEFAULT 'active'
+                )
+            `);
+
+        console.log('Table "areas" created or already exists.');
+
+        // Tạo bảng "courts" nếu chưa tồn tại
+        await db.execute(`
+         CREATE TABLE IF NOT EXISTS courts (
+             id INT AUTO_INCREMENT PRIMARY KEY,
+             name VARCHAR(255) NOT NULL,
+             id_areas INT NOT NULL,
+             id_field_types INT NOT NULL,
+             status VARCHAR(255) DEFAULT 'active',
+             price DECIMAL(10, 2) DEFAULT 0,
+             image VARCHAR(255),
+             description TEXT,
+             FOREIGN KEY (id_areas) REFERENCES areas(id),
+             FOREIGN KEY (id_field_types) REFERENCES field_types(id)
+         )
+     `);
+
+        console.log('Table "courts" created or already exists.');
+
     } catch (error) {
         console.error('Error creating tables:', error);
     } finally {

@@ -17,7 +17,7 @@ const db = mysql.createConnection({
     host: 'localhost', 
     user: 'root',
     password: 'root',
-    database: 'residential'
+    database: 'goalguard'
 });
 
 db.connect((err) => {
@@ -32,11 +32,17 @@ const authRoute = require('./app/routers/auth');
 const userRoute = require('./app/routers/user');
 const paymentRoute = require('./app/routers/paypal');
 const dashboardRouter = require('./app/routers/dashboardRouter');
+const FieldTypeRouter = require('./app/routers/fieldTypeRouter');
+const AreaRouter = require('./app/routers/areaRouter');
+const CourtRouter = require('./app/routers/courtRouter');
 
 app.use('/api/auth', authRoute);
 app.use('/api/user', userRoute);
 app.use('/api/payment', paymentRoute);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/field-types', FieldTypeRouter);
+app.use('/api/areas', AreaRouter);
+app.use('/api/courts', CourtRouter);
 
 
 const PORT = process.env.PORT || _CONST.PORT;
