@@ -59,3 +59,4 @@
    - Đảm bảo bạn đã cấu hình kết nối với cơ sở dữ liệu trong tệp `config/db.js`.
    - Chạy script để tạo bảng:
 6. Khởi động server:
+   - npm start
