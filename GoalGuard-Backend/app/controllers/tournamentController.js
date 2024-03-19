@@ -3,9 +3,9 @@ const db = require('../config/db');
 // Thêm giải đấu mới
 exports.addTournament = async (req, res) => {
     try {
-        const { name, info, teams, matches, groups, prizes, status, approval_status, id_users, image } = req.body;
-        const [result] = await db.execute('INSERT INTO tournaments (name, info, teams, matches, groups, prizes, status, approval_status, id_users, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [name, info, teams, matches, groups, prizes, status, approval_status, id_users, image]);
-        res.status(200).json({ id: result.insertId, name, info, teams, matches, groups, prizes, status, approval_status, id_users, image });
+        const { name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image } = req.body;
+        const [result] = await db.execute('INSERT INTO tournaments (name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image]);
+        res.status(200).json({ id: result.insertId, name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error adding tournament' });
@@ -15,10 +15,10 @@ exports.addTournament = async (req, res) => {
 // Sửa thông tin giải đấu
 exports.updateTournament = async (req, res) => {
     try {
-        const { name, info, teams, matches, groups, prizes, status, approval_status, id_users, image } = req.body;
+        const { name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image } = req.body;
         const id = req.params.id;
-        await db.execute('UPDATE tournaments SET name = ?, info = ?, teams = ?, matches = ?, groups = ?, prizes = ?, status = ?, approval_status = ?, id_users = ?, image = ? WHERE id = ?', [name, info, teams, matches, groups, prizes, status, approval_status, id_users, image, id]);
-        res.status(200).json({ id, name, info, teams, matches, groups, prizes, status, approval_status, id_users, image });
+        await db.execute('UPDATE tournaments SET name = ?, info = ?, teams = ?, matches = ?, group_count = ?, prizes = ?, status = ?, approval_status = ?, id_users = ?, image = ? WHERE id = ?', [name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image, id]);
+        res.status(200).json({ id, name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating tournament' });

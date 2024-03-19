@@ -108,21 +108,21 @@ const createTables = async () => {
         console.log('Table "products" created or already exists.');
 
         // Tạo bảng "tournaments" nếu chưa tồn tại
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS tournaments (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                info TEXT,
-                teams INT DEFAULT 0,
-                matches INT DEFAULT 0,
-                groups INT DEFAULT 0,
-                prizes INT DEFAULT 0,
-                status VARCHAR(255) DEFAULT 'active',
-                approval_status VARCHAR(255) DEFAULT 'pending',
-                id_users INT,
-                image VARCHAR(500), 
-                FOREIGN KEY (id_users) REFERENCES users(id)
-            )
+            await db.execute(`
+                CREATE TABLE IF NOT EXISTS tournaments (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    info TEXT,
+                    teams INT DEFAULT 0,
+                    matches INT DEFAULT 0,
+                    group_count INT DEFAULT 0, 
+                    prizes INT DEFAULT 0,
+                    status VARCHAR(255) DEFAULT 'active',
+                    approval_status VARCHAR(255) DEFAULT 'pending',
+                    id_users INT,
+                    image VARCHAR(500), 
+                    FOREIGN KEY (id_users) REFERENCES users(id)
+                )
             `);
         console.log('Table "tournaments" created or already exists.');
 
@@ -139,20 +139,21 @@ const createTables = async () => {
 
         console.log('Table "tournament_results" created or already exists.');
 
-        // Tạo bảng "bookings " nếu chưa tồn tại
+        // Tạo bảng "bookings" nếu chưa tồn tại
         await db.execute(`
-            CREATE TABLE IF NOT EXISTS bookings (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                court_id INT NOT NULL,
-                booking_date DATE NOT NULL,
-                start_time TIME NOT NULL,
-                end_time TIME NOT NULL,
-                payment_method VARCHAR(255) NOT NULL,
-                total_amount DECIMAL(10, 2) NOT NULL,
-                status VARCHAR(255) DEFAULT 'pending', -- Tình trạng đặt sân (ví dụ: pending, confirmed, cancelled)
-                FOREIGN KEY (user_id) REFERENCES users(id),
-                FOREIGN KEY (court_id) REFERENCES courts(id)  
+        CREATE TABLE IF NOT EXISTS bookings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            court_id INT NOT NULL,
+            booking_date DATE NOT NULL,
+            start_time TIME NOT NULL,
+            end_time TIME NOT NULL,
+            payment_method VARCHAR(255) NOT NULL,
+            total_amount DECIMAL(10, 2) NOT NULL,
+            status VARCHAR(255) DEFAULT 'pending', -- Tình trạng đặt sân (ví dụ: pending, confirmed, cancelled)
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (court_id) REFERENCES courts(id)  
+        )
         `);
 
         console.log('Table "bookings" created or already exists.');
@@ -166,11 +167,14 @@ const createTables = async () => {
                 quantity INT NOT NULL,
                 total_price DECIMAL(10, 2) NOT NULL,
                 payment_method VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                FOREIGN KEY (product_id) REFERENCES products(id) 
             )
-            `);
+        `);
 
         console.log('Table "orders" created or already exists.');
+
 
     } catch (error) {
         console.error('Error creating tables:', error);
