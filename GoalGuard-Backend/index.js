@@ -35,6 +35,11 @@ const dashboardRouter = require('./app/routers/dashboardRouter');
 const FieldTypeRouter = require('./app/routers/fieldTypeRouter');
 const AreaRouter = require('./app/routers/areaRouter');
 const CourtRouter = require('./app/routers/courtRouter');
+const ProductTypeRouter = require('./app/routers/productTypeRouter');
+const ProductRouter = require('./app/routers/productTypeRouter');
+const tournamentRouter = require('./app/routers/tournament');
+const tournamentResultRouter = require('./app/routers/tournamentResult');
+const bookingRouter = require('./app/routers/bookingRouter');
 
 app.use('/api/auth', authRoute);
 app.use('/api/user', userRoute);
@@ -43,6 +48,11 @@ app.use('/api/dashboard', dashboardRouter);
 app.use('/api/field-types', FieldTypeRouter);
 app.use('/api/areas', AreaRouter);
 app.use('/api/courts', CourtRouter);
+app.use('/api/product-types', ProductTypeRouter);
+app.use('/api/products', ProductRouter);
+app.use('/api/tournaments', tournamentRouter);
+app.use('/api/tournament-results', tournamentResultRouter);
+app.use('/api/booking', bookingRouter);
 
 
 const PORT = process.env.PORT || _CONST.PORT;

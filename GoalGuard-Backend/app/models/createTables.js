@@ -58,21 +58,105 @@ const createTables = async () => {
 
         // Tạo bảng "courts" nếu chưa tồn tại
         await db.execute(`
-         CREATE TABLE IF NOT EXISTS courts (
+          CREATE TABLE IF NOT EXISTS courts (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(255) NOT NULL,
+              id_areas INT NOT NULL,
+              id_field_types INT NOT NULL,
+              id_users INT, 
+              approval_status VARCHAR(255) DEFAULT 'pending', -- Thêm trường approval_status vào bảng
+              status VARCHAR(255) DEFAULT 'active',
+              price DECIMAL(10, 2) DEFAULT 0,
+              image VARCHAR(500),
+              description TEXT,
+              FOREIGN KEY (id_areas) REFERENCES areas(id),
+              FOREIGN KEY (id_field_types) REFERENCES field_types(id),
+              FOREIGN KEY (id_users) REFERENCES users(id) -- Thêm khóa ngoại đến bảng users
+          )
+      `);
+
+        console.log('Table "courts" created or already exists.');
+
+        // Tạo bảng "product_types" nếu chưa tồn tại
+        await db.execute(`
+         CREATE TABLE IF NOT EXISTS product_types (
              id INT AUTO_INCREMENT PRIMARY KEY,
              name VARCHAR(255) NOT NULL,
-             id_areas INT NOT NULL,
-             id_field_types INT NOT NULL,
-             status VARCHAR(255) DEFAULT 'active',
-             price DECIMAL(10, 2) DEFAULT 0,
-             image VARCHAR(255),
-             description TEXT,
-             FOREIGN KEY (id_areas) REFERENCES areas(id),
-             FOREIGN KEY (id_field_types) REFERENCES field_types(id)
+             status VARCHAR(255) DEFAULT 'active'
          )
      `);
 
-        console.log('Table "courts" created or already exists.');
+        console.log('Table "product_types" created or already exists.');
+
+        // Tạo bảng "products" nếu chưa tồn tại
+        await db.execute(`
+         CREATE TABLE IF NOT EXISTS products (
+             id INT AUTO_INCREMENT PRIMARY KEY,
+             name VARCHAR(255) NOT NULL,
+             price DECIMAL(10, 2) NOT NULL,
+             quantity INT NOT NULL,
+             status VARCHAR(255) DEFAULT 'active',
+             item_status VARCHAR(255) DEFAULT 'new',
+             id_product_type INT,
+             id_user INT,
+             image VARCHAR(500), 
+             FOREIGN KEY (id_product_type) REFERENCES product_types(id),
+             FOREIGN KEY (id_user) REFERENCES users(id)
+         )
+     `);
+
+        console.log('Table "products" created or already exists.');
+
+        // Tạo bảng "tournaments" nếu chưa tồn tại
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS tournaments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                info TEXT,
+                teams INT DEFAULT 0,
+                matches INT DEFAULT 0,
+                groups INT DEFAULT 0,
+                prizes INT DEFAULT 0,
+                status VARCHAR(255) DEFAULT 'active',
+                approval_status VARCHAR(255) DEFAULT 'pending',
+                id_users INT,
+                image VARCHAR(500), 
+                FOREIGN KEY (id_users) REFERENCES users(id)
+            )
+            `);
+        console.log('Table "tournaments" created or already exists.');
+
+        // Tạo bảng "tournament_results" nếu chưa tồn tại
+        await db.execute(`
+        CREATE TABLE IF NOT EXISTS tournament_results (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            tournament_id INT NOT NULL,
+            result_info TEXT,
+            image VARCHAR(500),
+            FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
+        )
+    `);
+
+    console.log('Table "tournament_results" created or already exists.');
+
+    // Tạo bảng "bookings " nếu chưa tồn tại
+    await db.execute(`
+    CREATE TABLE IF NOT EXISTS bookings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        court_id INT NOT NULL,
+        booking_date DATE NOT NULL,
+        start_time TIME NOT NULL,
+        end_time TIME NOT NULL,
+        payment_method VARCHAR(255) NOT NULL,
+        total_amount DECIMAL(10, 2) NOT NULL,
+        status VARCHAR(255) DEFAULT 'pending', -- Tình trạng đặt sân (ví dụ: pending, confirmed, cancelled)
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (court_id) REFERENCES courts(id)
+    
+`);
+
+console.log('Table "bookings" created or already exists.');
 
     } catch (error) {
         console.error('Error creating tables:', error);
