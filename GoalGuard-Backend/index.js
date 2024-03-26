@@ -42,6 +42,8 @@ const tournamentResultRouter = require('./app/routers/tournamentResult');
 const bookingRouter = require('./app/routers/bookingRouter');
 const orderRouter = require('./app/routers/orderRouter');
 const statisticsRouter = require('./app/routers/statisticsRouter');
+const residenceRulesRoutes = require('./app/routers/residenceRulesRoutes');
+const notificationRoutes = require('./app/routers/notificationRoutes');
 
 
 app.use('/api/auth', authRoute);
@@ -58,6 +60,8 @@ app.use('/api/tournament-results', tournamentResultRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/statistics', statisticsRouter);
+app.use('/api/residence-rules', residenceRulesRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 const PORT = process.env.PORT || _CONST.PORT;

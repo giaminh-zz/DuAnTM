@@ -67,11 +67,17 @@ exports.getAllAreas = async (req, res) => {
 // Tìm kiếm khu vực
 exports.searchAreas = async (req, res) => {
     try {
-        const keyword = req.query.keyword;
-        const [rows] = await db.execute('SELECT * FROM areas WHERE name LIKE ?', [`%${keyword}%`]);
+        let keyword = req.query.keyword;
+        let rows;
+        if (!keyword) {
+            [rows] = await db.execute('SELECT * FROM areas');
+        } else {
+            [rows] = await db.execute('SELECT * FROM areas WHERE name LIKE ?', [`%${keyword}%`]);
+        }
         res.status(200).json(rows);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error searching areas' });
     }
 };
+

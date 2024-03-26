@@ -61,8 +61,14 @@ exports.getAllFieldTypes = async (req, res) => {
 
 exports.searchFieldTypes = async (req, res) => {
     try {
-        const keyword = req.query.keyword;
-        const [rows] = await db.execute('SELECT * FROM field_types WHERE type LIKE ?', [`%${keyword}%`]);
+        let keyword = req.query.keyword || ''; // Nếu không có từ khóa, sẽ gán giá trị rỗng
+        let query = 'SELECT * FROM field_types'; // Truy vấn cơ sở dữ liệu mặc định
+
+        if (keyword !== '') {
+            query += ' WHERE type LIKE ?'; // Nếu có từ khóa, thêm điều kiện vào truy vấn SQL
+        }
+
+        const [rows] = await db.execute(query, [`%${keyword}%`]);
         res.status(200).json(rows);
     } catch (error) {
         console.error(error);
