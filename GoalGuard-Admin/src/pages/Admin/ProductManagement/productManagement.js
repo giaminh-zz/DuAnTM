@@ -101,7 +101,7 @@ const ProductManagement = () => {
                 "name": values.name,
                 "description": values.description,
                 "price": values.price,
-                "location": values.location,
+                "quantity": values.quantity,
                 "id_field_types": values.id_field_types,
                 "id_areas": values.id_areas,
                 "image": file,
