@@ -1,4 +1,4 @@
-import { AuditOutlined, ContainerOutlined, BarsOutlined, DashboardOutlined, FileDoneOutlined, ShoppingOutlined, UserOutlined, HeatMapOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { MessageOutlined,AuditOutlined, ContainerOutlined, BarsOutlined, DashboardOutlined, FileDoneOutlined, ShoppingOutlined, UserOutlined, HeatMapOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from "react-router-dom";
@@ -54,6 +54,12 @@ function Sidebar() {
       title: "Quản lý giải đấu",
       link: "/tournament",
       icon: <SafetyCertificateOutlined />
+    },
+    {
+      key: "news-list",
+      title: "Quản lý sự kiện",
+      link: "/news-list",
+      icon: <MessageOutlined />
     },
     {
       key: "residence-rules",

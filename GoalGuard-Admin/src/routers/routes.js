@@ -237,7 +237,11 @@ const RouterURL = withRouter(({ location }) => {
                             </Suspense>
                         </PrivateRoute>
 
-                        
+                        <PrivateRoute exact path="/news-list">
+                            <Suspense fallback={<LoadingScreen />}>
+                                <NewsList />
+                            </Suspense>
+                        </PrivateRoute>
                         
                         <PrivateRoute exact path="/notfound">
                             <NotFound />
@@ -350,7 +354,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    <Route exact path="/access-card">
+                    <Route exact path="/news-list">
                         <DefaultContainer />
                     </Route>
 
