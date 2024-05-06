@@ -84,6 +84,12 @@ function Sidebar() {
       icon: <DashboardOutlined />
     },
     {
+      key: "employee-management",
+      title: "Quản lý nhân viên",
+      link: "/employee-management",
+      icon: <UserOutlined />
+    },
+    {
       key: "asset-management",
       title: "Quản lý sân bóng",
       link: "/asset-management",

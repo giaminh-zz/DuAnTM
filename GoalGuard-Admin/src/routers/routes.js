@@ -146,6 +146,14 @@ const Register = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const EmployeeManagement = lazy(() => {
+    return Promise.all([
+        import('../pages/EmployeeManagement/employeeManagement'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
+
 const RouterURL = withRouter(({ location }) => {
 
 
@@ -250,6 +258,12 @@ const RouterURL = withRouter(({ location }) => {
                         <PrivateRoute exact path="/news-list">
                             <Suspense fallback={<LoadingScreen />}>
                                 <NewsList />
+                            </Suspense>
+                        </PrivateRoute>
+
+                        <PrivateRoute exact path="/employee-management">
+                            <Suspense fallback={<LoadingScreen />}>
+                                <EmployeeManagement />
                             </Suspense>
                         </PrivateRoute>
 
@@ -379,7 +393,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    <Route exact path="/visitors">
+                    <Route exact path="/employee-management">
                         <DefaultContainer />
                     </Route>
 

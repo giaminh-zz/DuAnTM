@@ -99,13 +99,12 @@ const ProductManagement = () => {
         try {
             const categoryList = {
                 "name": values.name,
-                "description": values.description,
                 "price": values.price,
                 "quantity": values.quantity,
-                "id_field_types": values.id_field_types,
-                "id_areas": values.id_areas,
+                "id_product_type": values.id_product_type,
                 "image": file,
                 "id_users": userData.id,
+                "itemStatus": "new",
                 "status": "active"
             };
             return productApi.updateProduct(categoryList, id).then(response => {
