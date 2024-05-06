@@ -33,6 +33,14 @@ const tournamentApi = {
       throw error;
     }
   },
+  async getTournamentByUserId(id) {
+    try {
+      const response = await axiosClient.get(`/tournaments/user/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
   async getAllTournaments() {
     try {
       const response = await axiosClient.get('/tournaments');

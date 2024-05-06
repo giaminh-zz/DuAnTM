@@ -80,17 +80,33 @@ exports.searchTournaments = async (req, res) => {
 exports.approveTournament = async (req, res) => {
     try {
         const id = req.params.id;
+        const { approval_status } = req.body; 
         // Kiểm tra xem giải đấu tồn tại không
         const [tournament] = await db.execute('SELECT * FROM tournaments WHERE id = ?', [id]);
         if (tournament.length === 0) {
             return res.status(404).json({ message: 'Tournament not found' });
         }
 
-        // Cập nhật trạng thái phê duyệt của giải đấu
-        await db.execute('UPDATE tournaments SET approval_status = "approved" WHERE id = ?', [id]);
-        res.status(200).json({ message: 'Tournament approved successfully' });
+        // Cập nhật trạng thái phê duyệt của giải đấu với giá trị mới
+        await db.execute('UPDATE tournaments SET approval_status = ? WHERE id = ?', [approval_status, id]);
+        res.status(200).json({ message: 'Tournament approval status updated successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error approving tournament' });
+        res.status(500).json({ message: 'Error updating tournament approval status' });
     }
 };
+
+// Lấy thông tin giải đấu theo id người dùng
+exports.getTournamentsByUser = async (req, res) => {
+    try {
+        const id_users = req.params.id;
+        const [rows] = await db.execute('SELECT t.*, u.username AS user_name FROM tournaments t JOIN users u ON t.id_users = u.id WHERE t.id_users = ?', [id_users]);
+       
+            res.status(200).json(rows);
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting tournaments by user id' });
+    }
+};
+

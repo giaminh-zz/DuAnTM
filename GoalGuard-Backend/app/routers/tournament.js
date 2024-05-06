@@ -23,4 +23,6 @@ router.get('/search', TournamentController.searchTournaments);
 // Phê duyệt giải đấu
 router.put('/:id/approve', TournamentController.approveTournament);
 
+router.get('/user/:id', TournamentController.getTournamentsByUser);
+
 module.exports = router;

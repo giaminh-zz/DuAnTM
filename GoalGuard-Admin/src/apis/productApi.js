@@ -35,12 +35,12 @@ const productAPI = {
   },
   async getProductByUserId(id) {
     try {
-        const response = await axiosClient.get(`/products/user/${id}`);
-        return response;
+      const response = await axiosClient.get(`/products/user/${id}`);
+      return response;
     } catch (error) {
-        throw error;
+      throw error;
     }
-},
+  },
   async getAllProducts() {
     try {
       const response = await axiosClient.get('/products');

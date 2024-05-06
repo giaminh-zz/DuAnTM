@@ -130,6 +130,14 @@ const ProductManagement = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const Tournament = lazy(() => {
+    return Promise.all([
+        import('../pages/Admin/Tournament/tournament'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
+
 
 const RouterURL = withRouter(({ location }) => {
 
@@ -220,6 +228,12 @@ const RouterURL = withRouter(({ location }) => {
                         <PrivateRoute exact path="/product-management">
                             <Suspense fallback={<LoadingScreen />}>
                                 <ProductManagement />
+                            </Suspense>
+                        </PrivateRoute>
+
+                        <PrivateRoute exact path="/tournament">
+                            <Suspense fallback={<LoadingScreen />}>
+                                <Tournament />
                             </Suspense>
                         </PrivateRoute>
 
@@ -356,7 +370,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    <Route exact path="/maintenance-funds">
+                    <Route exact path="/tournament">
                         <DefaultContainer />
                     </Route>
 
