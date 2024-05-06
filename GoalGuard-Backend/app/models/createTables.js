@@ -108,7 +108,7 @@ const createTables = async () => {
         console.log('Table "products" created or already exists.');
 
         // Tạo bảng "tournaments" nếu chưa tồn tại
-            await db.execute(`
+        await db.execute(`
                 CREATE TABLE IF NOT EXISTS tournaments (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
@@ -175,8 +175,8 @@ const createTables = async () => {
 
         console.log('Table "orders" created or already exists.');
 
-         // Tạo bảng "residence_rules" nếu chưa tồn tại
-         await db.execute(`
+        // Tạo bảng "residence_rules" nếu chưa tồn tại
+        await db.execute(`
          CREATE TABLE IF NOT EXISTS residence_rules (
              id INT AUTO_INCREMENT PRIMARY KEY,
              title VARCHAR(255) NOT NULL,
@@ -185,9 +185,9 @@ const createTables = async () => {
              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
          )
      `);
- 
-         console.log('Table "residence_rules" created or already exists.');
-         
+
+        console.log('Table "residence_rules" created or already exists.');
+
 
         // Tạo bảng "notifications" nếu chưa tồn tại
         await db.execute(`
@@ -200,7 +200,21 @@ const createTables = async () => {
        )
       `);
 
-       console.log('Table "notifications" created or already exists.');
+        console.log('Table "notifications" created or already exists.');
+
+        // Tạo bảng "news" nếu chưa tồn tại
+        await db.execute(`
+       CREATE TABLE IF NOT EXISTS news (
+           id INT AUTO_INCREMENT PRIMARY KEY,
+           name VARCHAR(255) NOT NULL,
+           description TEXT,
+           image VARCHAR(255),
+           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+       )
+   `);
+
+        console.log('Table "news" created or already exists.');
 
 
     } catch (error) {

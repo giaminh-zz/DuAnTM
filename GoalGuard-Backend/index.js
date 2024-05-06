@@ -44,6 +44,7 @@ const orderRouter = require('./app/routers/orderRouter');
 const statisticsRouter = require('./app/routers/statisticsRouter');
 const residenceRulesRoutes = require('./app/routers/residenceRulesRoutes');
 const notificationRoutes = require('./app/routers/notificationRoutes');
+const newsRouter = require('./app/routers/newsRouter');
 
 
 app.use('/api/auth', authRoute);
@@ -62,6 +63,7 @@ app.use('/api/orders', orderRouter);
 app.use('/api/statistics', statisticsRouter);
 app.use('/api/residence-rules', residenceRulesRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/news', newsRouter);
 
 
 const PORT = process.env.PORT || _CONST.PORT;
