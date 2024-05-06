@@ -64,14 +64,14 @@ const createTables = async () => {
               id_areas INT NOT NULL,
               id_field_types INT NOT NULL,
               id_users INT, 
-              approval_status VARCHAR(255) DEFAULT 'pending', -- Thêm trường approval_status vào bảng
+              approval_status VARCHAR(255) DEFAULT 'pending', 
               status VARCHAR(255) DEFAULT 'active',
               price DECIMAL(10, 2) DEFAULT 0,
               image VARCHAR(500),
               description TEXT,
               FOREIGN KEY (id_areas) REFERENCES areas(id),
               FOREIGN KEY (id_field_types) REFERENCES field_types(id),
-              FOREIGN KEY (id_users) REFERENCES users(id) -- Thêm khóa ngoại đến bảng users
+              FOREIGN KEY (id_users) REFERENCES users(id)
           )
       `);
 

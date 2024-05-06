@@ -67,15 +67,9 @@ function Sidebar() {
     },
     {
       key: "asset-management",
-      title: "Quản lý sự kiện",
+      title: "Quản lý sân bóng",
       link: "/asset-management",
       icon: <ContainerOutlined />
-    },
-    {
-      key: "news-list",
-      title: "Tin tức",
-      link: "/news-list",
-      icon: <BarsOutlined />
     },
   ];
 
@@ -117,7 +111,7 @@ function Sidebar() {
       theme='light'
     >
 
-      {user.role === "isHost" ? (
+      {user.role === "isSeller" ? (
         menuSidebarHost.map((map) => (
           <Menu.Item
             onClick={() => navigate(map.link, map.key)}

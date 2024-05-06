@@ -18,13 +18,26 @@ exports.addCourt = async (req, res) => {
 // Sửa thông tin sân
 exports.updateCourt = async (req, res) => {
     try {
-        const { name, id_areas, id_field_types, id_users, status, price, image, description } = req.body;
         const id = req.params.id;
+        const updates = {}; // Đối tượng chứa các trường cần cập nhật
+
+        // Lặp qua các trường trong req.body và chỉ cập nhật những trường có giá trị
+        for (const key in req.body) {
+            if (req.body.hasOwnProperty(key)) {
+                updates[key] = req.body[key];
+            }
+        }
+
+        const updateFields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+        const updateValues = Object.values(updates);
+
         await db.execute(
-            'UPDATE courts SET name = ?, id_areas = ?, id_field_types = ?, id_users = ?, status = ?, price = ?, image = ?, description = ? WHERE id = ?',
-            [name, id_areas, id_field_types, id_users, status, price, image, description, id]
+            `UPDATE courts SET ${updateFields} WHERE id = ?`,
+            [...updateValues, id]
         );
-        res.status(200).json({ id, name, id_areas, id_field_types, id_users, status, price, image, description });
+
+        // Trả về thông tin đã cập nhật
+        res.status(200).json({ id, ...updates });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating court' });
@@ -47,7 +60,14 @@ exports.deleteCourt = async (req, res) => {
 exports.getCourtById = async (req, res) => {
     try {
         const id = req.params.id;
-        const [rows] = await db.execute('SELECT * FROM courts WHERE id = ?', [id]);
+        const [rows] = await db.execute(`
+            SELECT courts.*, field_types.type AS field_type, areas.name AS area, users.username AS user_name
+            FROM courts
+            LEFT JOIN field_types ON courts.id_field_types = field_types.id
+            LEFT JOIN areas ON courts.id_areas = areas.id
+            LEFT JOIN users ON courts.id_users = users.id
+            WHERE courts.id = ?
+        `, [id]);
         if (rows.length > 0) {
             res.status(200).json(rows[0]);
         } else {
@@ -62,7 +82,13 @@ exports.getCourtById = async (req, res) => {
 // Lấy tất cả sân
 exports.getAllCourts = async (req, res) => {
     try {
-        const [rows] = await db.execute('SELECT * FROM courts');
+        const [rows] = await db.execute(`
+            SELECT courts.*, field_types.type AS field_type, areas.name AS area, users.username AS user_name
+            FROM courts
+            LEFT JOIN field_types ON courts.id_field_types = field_types.id
+            LEFT JOIN areas ON courts.id_areas = areas.id
+            LEFT JOIN users ON courts.id_users = users.id
+        `);
         res.status(200).json(rows);
     } catch (error) {
         console.error(error);
@@ -92,5 +118,24 @@ exports.updateApprovalStatus = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating approval status of court' });
+    }
+};
+
+// Lấy thông tin sân theo id người dùng
+exports.getCourtsByUserId = async (req, res) => {
+    try {
+        const id_users = req.params.id;
+        const [rows] = await db.execute(`
+            SELECT courts.*, field_types.type AS field_type, areas.name AS area, users.username AS user_name
+            FROM courts
+            LEFT JOIN field_types ON courts.id_field_types = field_types.id
+            LEFT JOIN areas ON courts.id_areas = areas.id
+            LEFT JOIN users ON courts.id_users = users.id
+            WHERE courts.id_users = ?
+        `, [id_users]);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting courts by user id' });
     }
 };

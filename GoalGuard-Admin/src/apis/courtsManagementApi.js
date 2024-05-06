@@ -9,7 +9,7 @@ const courtsManagementApi = {
             throw error;
         }
     },
-    async updateCourt(id, data) {
+    async updateCourt(data,id) {
         try {
             const response = await axiosClient.put(`/courts/update/${id}`, data);
             return response;
@@ -28,6 +28,14 @@ const courtsManagementApi = {
     async getCourtById(id) {
         try {
             const response = await axiosClient.get(`/courts/${id}`);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
+    async getCourtByUserId(id) {
+        try {
+            const response = await axiosClient.get(`/courts/user/${id}`);
             return response;
         } catch (error) {
             throw error;

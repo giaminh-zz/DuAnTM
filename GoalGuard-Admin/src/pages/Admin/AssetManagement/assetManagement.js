@@ -32,6 +32,7 @@ import fieldtypesApi from '../../../apis/fieldtypesApi';
 import uploadFileApi from '../../../apis/uploadFileApi';
 import userApi from '../../../apis/userApi';
 import { useHistory, useParams } from "react-router-dom";
+import areaManagementApi from '../../../apis/areaManagementApi';
 
 const { Option } = Select;
 
@@ -57,13 +58,14 @@ const AssetManagement = () => {
             const categoryList = {
                 "name": values.name,
                 "description": values.description,
-                "value": values.value,
+                "price": values.price,
                 "location": values.location,
-                "status": values.status,
-                "categoryId": values.categoryId,
-                "quantity": values.quantity || 0,
-                "image": file
-            }
+                "id_field_types": values.id_field_types,
+                "id_areas": values.id_areas,
+                "image": file,
+                "id_users": userData.id,
+                "status": "active"
+            };
             return courtsManagementApi.addCourt(categoryList).then(response => {
                 if (response.message === "Asset with the same name already exists") {
                     notification["error"]({
@@ -103,13 +105,14 @@ const AssetManagement = () => {
             const categoryList = {
                 "name": values.name,
                 "description": values.description,
-                "value": values.value,
+                "price": values.price,
                 "location": values.location,
-                "status": values.status,
-                "categoryId": values.categoryId,
-                "quantity": values.quantity,
-                "image": file
-            }
+                "id_field_types": values.id_field_types,
+                "id_areas": values.id_areas,
+                "image": file,
+                "id_users": userData.id,
+                "status": "active"
+            };
             return courtsManagementApi.updateCourt(categoryList, id).then(response => {
                 if (response.message === "Asset with the same name already exists") {
                     notification["error"]({
@@ -207,20 +210,19 @@ const AssetManagement = () => {
     }
 
     const handleEditCategory = (id) => {
+        console.log(id);
         setOpenModalUpdate(true);
         (async () => {
             try {
                 const response = await courtsManagementApi.getCourtById(id);
                 setId(id);
                 form2.setFieldsValue({
-                    name: response.data.name,
-                    description: response.data.description,
-                    value: response.data.value,
-                    location: response.data.location,
-                    status: response.data.status,
-                    categoryId: response.data.category_id,
-                    quantity: response.data.quantity,
-                    image: response.data.image
+                    name: response.name,
+                    description: response.description,
+                    price: response.price,
+                    location: response.location,
+                    id_field_types: response.id_field_types,
+                    id_areas: response.id_areas,
                 });
                 console.log(form2);
                 setLoading(false);
@@ -243,7 +245,7 @@ const AssetManagement = () => {
         console.log(data);
 
         try {
-            await courtsManagementApi.banAccount(data.id).then(response => {
+            await courtsManagementApi.updateApprovalStatus(data.id, "approved").then(response => {
                 if (response.message === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -272,7 +274,7 @@ const AssetManagement = () => {
     const handleBanAccount = async (data) => {
         console.log(data);
         try {
-            await courtsManagementApi.unBanAccount(data.id).then(response => {
+            await courtsManagementApi.updateApprovalStatus(data.id,"pending").then(response => {
                 if (response === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -324,18 +326,18 @@ const AssetManagement = () => {
         },
         {
             title: 'Khu vực',
-            dataIndex: 'id_areas',
-            key: 'id_areas',
+            dataIndex: 'area',
+            key: 'area',
         },
         {
             title: 'Loại sân',
-            dataIndex: 'id_field_types',
-            key: 'id_field_types',
+            dataIndex: 'field_type',
+            key: 'field_type',
         },
         {
             title: 'Người dùng',
-            dataIndex: 'id_users',
-            key: 'id_users',
+            dataIndex: 'user_name',
+            key: 'user_name',
         },
         {
             title: 'Trạng thái',
@@ -344,11 +346,11 @@ const AssetManagement = () => {
         },
         {
             title: 'Giá trị',
-            dataIndex: 'value',
-            key: 'value',
+            dataIndex: 'price',
+            key: 'price',
             render: (text, record) => {
                 // Định dạng số theo format tiền Việt Nam
-                const formattedCost = Number(record.value).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                const formattedCost = Number(record.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 return formattedCost;
             },
         },
@@ -360,10 +362,10 @@ const AssetManagement = () => {
         },
         {
             title: 'Phê duyệt',
-            dataIndex: 'approval',
-            key: 'approval',
+            dataIndex: 'approval_status',
+            key: 'approval_status',
             render: (approval) => {
-                return approval === 'unapproved' ? 'Chưa phê duyệt' : "Phê duyệt";
+                return approval === 'pending' ? 'Chưa phê duyệt' : "Phê duyệt";
             }
         },
         {
@@ -372,7 +374,7 @@ const AssetManagement = () => {
             render: (text, record) => (
                 <div>
                     <Row>
-                        {userData.role != "isHost" ? (
+                        {userData.role != "isSeller" ? (
                             <>
                                 <Popconfirm
                                     title="Bạn muốn phê duyệt sân bóng này?"
@@ -389,7 +391,7 @@ const AssetManagement = () => {
                                     </Button>
                                 </Popconfirm>
                                 <div
-                                    style={{ marginTop: 10 }}>
+                                    style={{ marginLeft: 10 }}>
                                     <Popconfirm
                                         title="Bạn muốn từ chối sân bóng này?"
                                         onConfirm={() => handleBanAccount(record)}
@@ -405,16 +407,6 @@ const AssetManagement = () => {
                                         </Button>
                                     </Popconfirm>
                                 </div>
-                                <Button
-                                    size="small"
-                                    icon={<EyeOutlined />} // Use EyeOutlined icon for view
-                                    style={{ width: 170, borderRadius: 15, height: 30, marginTop: 5 }}
-
-                                    onClick={() => handleViewParticipants(record.id)} // Call handleViewParticipants on click
-                                >
-                                    {"Xem người tham dự"}
-                                </Button>
-
                             </>
                         ) : (
                             <>
@@ -426,7 +418,7 @@ const AssetManagement = () => {
                                 >{"Chỉnh sửa"}
                                 </Button>
                                 <div
-                                    style={{ marginTop: 6 }}>
+                                    style={{ marginLeft: 6 }}>
                                     <Popconfirm
                                         title="Bạn có chắc chắn xóa sân bóng này?"
                                         onConfirm={() => handleDeleteCategory(record.id)}
@@ -441,15 +433,6 @@ const AssetManagement = () => {
                                         </Button>
                                     </Popconfirm>
                                 </div>
-                                <Button
-                                    size="small"
-                                    icon={<EyeOutlined />} // Use EyeOutlined icon for view
-                                    style={{ width: 170, borderRadius: 15, height: 30, marginTop: 5 }}
-
-                                    onClick={() => handleViewParticipants(record.id)} // Call handleViewParticipants on click
-                                >
-                                    {"Xem người tham dự"}
-                                </Button>
                             </>
                         )}
                     </Row>
@@ -458,12 +441,7 @@ const AssetManagement = () => {
         },
     ];
 
-    const history = useHistory();
 
-
-    const handleViewParticipants = (id) => {
-        history.push("/participants/" + id);
-    };
 
     const handleChangeImage = async (e) => {
         setLoading(true);
@@ -474,39 +452,20 @@ const AssetManagement = () => {
         setLoading(false);
     }
 
-    const [selectedCategory, setSelectedCategory] = useState(null);
-
-    const handleFilter2 = async (category_name) => {
-        try {
-            console.log(category_name);
-
-            if (category_name) {
-                await courtsManagementApi.getAllCourts().then((res) => {
-                    const filteredByCategoryName = res.data.filter(item => item.category_name
-                        .toLowerCase() === category_name.toLowerCase());
-
-                    setCategory(filteredByCategoryName);
-                });
-            } else {
-                await courtsManagementApi.getAllCourts().then((res) => {
-                    console.log(res);
-                    setCategory(res.data);
-                    setLoading(false);
-                });
-            }
-
-
-        } catch (error) {
-            console.log('search to fetch category list:' + error);
-        }
-    }
 
     const [userData, setUserData] = useState([]);
+    const [area, setArea] = useState([]);
 
 
     useEffect(() => {
         (async () => {
             try {
+
+                await areaManagementApi.getAllAreas().then((res) => {
+                    console.log(res);
+                    setArea(res);
+                    setLoading(false);
+                });
 
                 const response = await userApi.getProfile();
                 console.log(response);
@@ -522,7 +481,7 @@ const AssetManagement = () => {
                         setLoading(false);
                     });
                 } else {
-                    await courtsManagementApi.getListByUser(createdById).then((res) => {
+                    await courtsManagementApi.getCourtByUserId(createdById).then((res) => {
                         console.log(res);
                         setCategory(res);
                         setLoading(false);
@@ -577,24 +536,10 @@ const AssetManagement = () => {
                                     <Col span="6">
                                         <Row justify="end">
                                             <Space>
-                                                {userData.role == "isAdmin" ?
-                                                    <Select
-                                                        placeholder="Lọc theo loại sân"
-                                                        style={{ width: 260, marginRight: 10 }}
-                                                        onChange={(value) => {
-                                                            setSelectedCategory(value);
-                                                            handleFilter2(value);
-                                                        }}
-                                                        value={selectedCategory}
-                                                    >
-                                                        <Option value="">Tất cả loại sân</Option>
-                                                        {fieldTypes.map(category => (
-                                                            <Option key={category.type} value={category.type}>
-                                                                {category.type}
-                                                            </Option>
-                                                        ))}
-                                                    </Select> : null}
-                                                <Button onClick={showModal} icon={<PlusOutlined />} style={{ marginLeft: 10 }} >Tạo sân bóng</Button>
+                                                {userData.role !== "isAdmin" ?
+
+                                                    <Button onClick={showModal} icon={<PlusOutlined />} style={{ marginLeft: 10 }} >Tạo sân bóng</Button> : null}
+
                                             </Space>
                                         </Row>
                                     </Col>
@@ -631,11 +576,10 @@ const AssetManagement = () => {
                 >
                     <Form
                         form={form}
-                        name="eventCreate"
+                        name="courtCreate"
                         layout="vertical"
                         initialValues={{
-                            residence: ['zhejiang', 'hangzhou', 'xihu'],
-                            prefix: '86',
+                            status: 'Đang sử dụng',
                         }}
                         scrollToFirstError
                     >
@@ -643,17 +587,18 @@ const AssetManagement = () => {
 
                             <Form.Item
                                 name="name"
-                                label="Tên"
+                                label="Tên sân"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập tên!',
+                                        message: 'Vui lòng nhập tên sân!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Tên" />
+                                <Input placeholder="Tên sân" />
                             </Form.Item>
+
                             <Form.Item
                                 name="description"
                                 label="Mô tả"
@@ -665,58 +610,26 @@ const AssetManagement = () => {
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Mô tả" />
+                                <Input.TextArea placeholder="Mô tả" />
                             </Form.Item>
 
                             <Form.Item
-                                name="value"
-                                label="Giá trị"
+                                name="price"
+                                label="Giá"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập giá trị!',
+                                        message: 'Vui lòng nhập giá!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
                                 <InputNumber
-                                    placeholder="Giá trị"
+                                    placeholder="Giá"
                                     style={{ width: '100%' }}
-                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} // Use dot as a thousand separator
-                                    parser={(value) => value.replace(/\./g, '')} // Remove dots for parsing
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} // Sử dụng dấu chấm làm phân cách hàng nghìn
+                                    parser={(value) => value.replace(/\./g, '')} // Loại bỏ dấu chấm khi phân tích
                                 />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="location"
-                                label="Vị trí"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập vị trí!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Input placeholder="Vị trí" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="status"
-                                label="Trạng thái"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng chọn trạng thái!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Select placeholder="Chọn trạng thái">
-                                    <Select.Option value="Đang sử dụng">Đang sử dụng</Select.Option>
-                                    <Select.Option value="Chưa sử dụng">Chưa sử dụng</Select.Option>
-                                    <Select.Option value="Bản nháp">Bản nháp</Select.Option>
-                                </Select>
                             </Form.Item>
 
                             <Form.Item
@@ -732,9 +645,29 @@ const AssetManagement = () => {
                             >
                                 <Select placeholder="Chọn loại sân">
                                     {fieldTypes.map(fieldType => (
-                                        <Option key={fieldType.id} value={fieldType.id}>
+                                        <Select.Option key={fieldType.id} value={fieldType.id}>
                                             {fieldType.type}
-                                        </Option>
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+
+                            <Form.Item
+                                name="id_areas"
+                                label="Khu vực"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng chọn khu vực!',
+                                    },
+                                ]}
+                                style={{ marginBottom: 10 }}
+                            >
+                                <Select placeholder="Chọn khu vực">
+                                    {area.map(fieldType => (
+                                        <Select.Option key={fieldType.id} value={fieldType.id}>
+                                            {fieldType.name}
+                                        </Select.Option>
                                     ))}
                                 </Select>
                             </Form.Item>
@@ -748,17 +681,19 @@ const AssetManagement = () => {
                                         message: 'Vui lòng chọn ảnh!',
                                     },
                                 ]}
+                                style={{ marginBottom: 10 }}
                             >
                                 <input
                                     type="file"
                                     accept="image/*"
                                     onChange={handleChangeImage}
-                                    id="avatar"
-                                    name="file"
+                                    id="image"
+                                    name="image"
                                 />
                             </Form.Item>
                         </Spin>
                     </Form>
+
                 </Modal>
 
                 <Modal
@@ -794,80 +729,49 @@ const AssetManagement = () => {
                         <Spin spinning={loading}>
                             <Form.Item
                                 name="name"
-                                label="Tên"
+                                label="Tên sân"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Please input your sender name!',
+                                        message: 'Vui lòng nhập tên sân!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Tên" />
+                                <Input placeholder="Tên sân" />
                             </Form.Item>
+
                             <Form.Item
                                 name="description"
                                 label="Mô tả"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Please input your subject!',
+                                        message: 'Vui lòng nhập mô tả!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Mô tả" />
+                                <Input.TextArea placeholder="Mô tả" />
                             </Form.Item>
 
                             <Form.Item
-                                name="value"
-                                label="Giá trị"
+                                name="price"
+                                label="Giá"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập giá trị!',
+                                        message: 'Vui lòng nhập giá!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
                                 <InputNumber
-                                    placeholder="Giá trị"
+                                    placeholder="Giá"
                                     style={{ width: '100%' }}
-                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} // Use dot as a thousand separator
-                                    parser={(value) => value.replace(/\./g, '')} // Remove dots for parsing
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} // Sử dụng dấu chấm làm phân cách hàng nghìn
+                                    parser={(value) => value.replace(/\./g, '')} // Loại bỏ dấu chấm khi phân tích
                                 />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="location"
-                                label="Vị trí"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập vị trí!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Input placeholder="Vị trí" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="status"
-                                label="Trạng thái"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng chọn trạng thái!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Select placeholder="Chọn trạng thái">
-                                    <Select.Option value="Đang sử dụng">Đang sử dụng</Select.Option>
-                                    <Select.Option value="Chưa sử dụng">Chưa sử dụng</Select.Option>
-                                    <Select.Option value="Bản nháp">Bản nháp</Select.Option>
-                                </Select>
                             </Form.Item>
 
                             <Form.Item
@@ -883,41 +787,44 @@ const AssetManagement = () => {
                             >
                                 <Select placeholder="Chọn loại sân">
                                     {fieldTypes.map(fieldType => (
-                                        <Option key={fieldType.id} value={fieldType.id}>
+                                        <Select.Option key={fieldType.id} value={fieldType.id}>
                                             {fieldType.type}
-                                        </Option>
+                                        </Select.Option>
                                     ))}
                                 </Select>
                             </Form.Item>
 
                             <Form.Item
-                                name="quantity"
-                                label="Số lượng"
+                                name="id_areas"
+                                label="Khu vực"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập số lượng!',
+                                        message: 'Vui lòng chọn khu vực!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <InputNumber placeholder="Số lượng" disabled />
-                            </Form.Item>
-
-                            <Form.Item name="image" label="Ảnh hiện tại">
-                                <Input disabled value={form2.getFieldValue('image')} />
+                                <Select placeholder="Chọn khu vực">
+                                    {area.map(fieldType => (
+                                        <Select.Option key={fieldType.id} value={fieldType.id}>
+                                            {fieldType.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
 
                             <Form.Item
-                                name="attachment"
+                                name="image"
                                 label="Chọn ảnh"
+                                style={{ marginBottom: 10 }}
                             >
                                 <input
                                     type="file"
                                     accept="image/*"
                                     onChange={handleChangeImage}
-                                    id="avatar"
-                                    name="file"
+                                    id="image"
+                                    name="image"
                                 />
                             </Form.Item>
                         </Spin>
