@@ -114,6 +114,14 @@ const AreaManagement = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const ProductType = lazy(() => {
+    return Promise.all([
+        import('../pages/Admin/ProductType/productType'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
+
 
 const RouterURL = withRouter(({ location }) => {
 
@@ -195,9 +203,9 @@ const RouterURL = withRouter(({ location }) => {
                             </Suspense>
                         </PrivateRoute>
 
-                        <PrivateRoute exact path="/news-list">
+                        <PrivateRoute exact path="/product-type-management">
                             <Suspense fallback={<LoadingScreen />}>
-                                <NewsList />
+                                <ProductType />
                             </Suspense>
                         </PrivateRoute>
                         
@@ -344,7 +352,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
                     
-                    <Route exact path="/news-list">
+                    <Route exact path="/product-type-management">
                         <DefaultContainer />
                     </Route>
 

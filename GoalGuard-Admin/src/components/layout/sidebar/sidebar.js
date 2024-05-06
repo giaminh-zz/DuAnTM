@@ -38,6 +38,12 @@ function Sidebar() {
       icon: <HeatMapOutlined />
     },
     {
+      key: "product-type-management",
+      title: "Quản lý loại dịch vụ",
+      link: "/product-type-management",
+      icon: <BarsOutlined />
+    },
+    {
       key: "asset-management",
       title: "Quản lý sân bóng",
       link: "/asset-management",

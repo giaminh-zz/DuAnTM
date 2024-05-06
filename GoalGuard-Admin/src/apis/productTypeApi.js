@@ -1,17 +1,17 @@
 import axiosClient from './axiosClient';
 
 const productTypeAPI = {
-  async addProductType(data) {
+  async addProductType(name, status) {
     try {
-      const response = await axiosClient.post('/product-types/add', data);
+      const response = await axiosClient.post('/product-types/add', { name, status });
       return response;
     } catch (error) {
       throw error;
     }
   },
-  async updateProductType(data, id) {
+  async updateProductType(id, name, status) {
     try {
-      const response = await axiosClient.put(`/product-types/update/${id}`, data);
+      const response = await axiosClient.put(`/product-types/update/${id}`, { name, status });
       return response;
     } catch (error) {
       throw error;
