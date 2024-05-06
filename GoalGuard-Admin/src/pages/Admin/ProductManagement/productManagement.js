@@ -153,7 +153,7 @@ const ProductManagement = () => {
 
     const handleCategoryList = async () => {
         try {
-            
+
             await productApi.getProductByUserId(userData.id).then((res) => {
                 console.log(res);
                 setCategory(res);
@@ -345,21 +345,23 @@ const ProductManagement = () => {
     useEffect(() => {
         (async () => {
             try {
-                
+
                 const response = await userApi.getProfile();
                 console.log(response);
                 setUserData(response.user);
 
                 const createdById = response.user.id;
 
-              
-                await productTypeApi.getAllProductTypes().then((res) => {
-                    console.log(res);
-                    setFieldTypes(res);
-                    setLoading(false);
-                });
-                
-              
+
+                const productTypesResponse = await productTypeApi.getAllProductTypes();
+                console.log(productTypesResponse);
+
+                // Lọc các loại sản phẩm có trạng thái là "active"
+                const activeProductTypes = productTypesResponse.filter(productType => productType.status === 'active');
+
+                setFieldTypes(activeProductTypes);
+
+
                 await productApi.getProductByUserId(createdById).then((res) => {
                     console.log(res);
                     setCategory(res);
@@ -583,7 +585,7 @@ const ProductManagement = () => {
                         scrollToFirstError
                     >
                         <Spin spinning={loading}>
-                        <Form.Item
+                            <Form.Item
                                 name="name"
                                 label="Tên dịch vụ"
                                 rules={[

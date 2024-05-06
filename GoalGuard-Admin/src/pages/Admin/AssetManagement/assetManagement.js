@@ -274,7 +274,7 @@ const AssetManagement = () => {
     const handleBanAccount = async (data) => {
         console.log(data);
         try {
-            await courtsManagementApi.updateApprovalStatus(data.id,"pending").then(response => {
+            await courtsManagementApi.updateApprovalStatus(data.id, "pending").then(response => {
                 if (response === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -460,11 +460,19 @@ const AssetManagement = () => {
         (async () => {
             try {
 
-                await areaManagementApi.getAllAreas().then((res) => {
-                    console.log(res);
-                    setArea(res);
-                    setLoading(false);
-                });
+                // Lấy tất cả các khu vực có trạng thái là "active"
+                const areaResponse = await areaManagementApi.getAllAreas();
+                console.log(areaResponse);
+                const activeAreas = areaResponse.filter(area => area.status === 'active');
+                setArea(activeAreas);
+
+                // Lấy tất cả các loại sân có trạng thái là "active"
+                const fieldTypesResponse = await fieldtypesApi.getAllFieldTypes();
+                console.log(fieldTypesResponse);
+                const activeFieldTypes = fieldTypesResponse.filter(fieldType => fieldType.status === 'active');
+                setFieldTypes(activeFieldTypes);
+
+                setLoading(false);
 
                 const response = await userApi.getProfile();
                 console.log(response);
@@ -487,12 +495,6 @@ const AssetManagement = () => {
                     });
                 }
 
-
-                await fieldtypesApi.getAllFieldTypes().then((res) => {
-                    console.log(res);
-                    setFieldTypes(res);
-                    setLoading(false);
-                });
                 ;
             } catch (error) {
                 console.log('Failed to fetch category list:' + error);
