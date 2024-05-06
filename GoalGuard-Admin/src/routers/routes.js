@@ -138,6 +138,13 @@ const Tournament = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const Register = lazy(() => {
+    return Promise.all([
+        import('../pages/Register/register'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
 
 const RouterURL = withRouter(({ location }) => {
 
@@ -154,6 +161,9 @@ const RouterURL = withRouter(({ location }) => {
             </PublicRoute>
             <PublicRoute exact path="/reset-password/:id">
                 <ResetPassword />
+            </PublicRoute>
+            <PublicRoute exact path="/register">
+                <Register />
             </PublicRoute>
         </div>
     )
@@ -212,7 +222,7 @@ const RouterURL = withRouter(({ location }) => {
                                 <Notification />
                             </Suspense>
                         </PrivateRoute>
-                        
+
                         <PrivateRoute exact path="/dash-board">
                             <Suspense fallback={<LoadingScreen />}>
                                 <DashBoard />
@@ -242,7 +252,7 @@ const RouterURL = withRouter(({ location }) => {
                                 <NewsList />
                             </Suspense>
                         </PrivateRoute>
-                        
+
                         <PrivateRoute exact path="/notfound">
                             <NotFound />
                         </PrivateRoute>
@@ -261,6 +271,9 @@ const RouterURL = withRouter(({ location }) => {
                         <LoginContainer />
                     </Route>
 
+                    <Route exact path="/register">
+                        <LoginContainer />
+                    </Route>
                     <Route exact path="/login">
                         <LoginContainer />
                     </Route>
@@ -268,7 +281,7 @@ const RouterURL = withRouter(({ location }) => {
                     <Route exact path="/reset-password/:id">
                         <LoginContainer />
                     </Route>
-                    
+
                     <Route exact path="/profile">
                         <DefaultContainer />
                     </Route>
@@ -281,7 +294,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    
+
                     <Route exact path="/dash-board">
                         <DefaultContainer />
                     </Route>
@@ -385,7 +398,7 @@ const RouterURL = withRouter(({ location }) => {
                     <Route exact path="/dash-board">
                         <DefaultContainer />
                     </Route>
-                    
+
                     <Route exact path="/product-type-management">
                         <DefaultContainer />
                     </Route>
