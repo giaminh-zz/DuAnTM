@@ -456,7 +456,6 @@ const AssetManagement = () => {
     const [userData, setUserData] = useState([]);
     const [area, setArea] = useState([]);
 
-
     useEffect(() => {
         (async () => {
             try {

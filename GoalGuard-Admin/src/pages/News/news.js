@@ -29,6 +29,7 @@ import axiosClient from '../../apis/axiosClient';
 import newsApi from "../../apis/newsApi";
 import "./news.css";
 import uploadFileApi from '../../apis/uploadFileApi';
+import userApi from '../../apis/userApi';
 
 const NewsList = () => {
 
@@ -257,39 +258,63 @@ const NewsList = () => {
             render: (text, record) => (
                 <div>
                     <Row>
-                        <Button
-                            size="small"
-                            icon={<EditOutlined />}
-                            style={{ width: 150, borderRadius: 15, height: 30 }}
-                            onClick={() => handleEditCategory(record.id)}
-                        >{"Chỉnh sửa"}
-                        </Button>
-                        <div
-                            style={{ marginLeft: 10 }}>
-                            <Popconfirm
-                                title="Bạn có chắc chắn xóa tin tức này?"
-                                onConfirm={() => handleDeleteCategory(record.id)}
-                                okText="Yes"
-                                cancelText="No"
-                            >
+                        {userData.role == "isAdmin" ?
+                            <>
                                 <Button
                                     size="small"
-                                    icon={<DeleteOutlined />}
+                                    icon={<EditOutlined />}
                                     style={{ width: 150, borderRadius: 15, height: 30 }}
-                                >{"Xóa"}
+                                    onClick={() => handleEditCategory(record.id)}
+                                >{"Chỉnh sửa"}
                                 </Button>
-                            </Popconfirm>
-                        </div>
+                                <div
+                                    style={{ marginLeft: 10 }}>
+                                    <Popconfirm
+                                        title="Bạn có chắc chắn xóa tin tức này?"
+                                        onConfirm={() => handleDeleteCategory(record.id)}
+                                        okText="Yes"
+                                        cancelText="No"
+                                    >
+                                        <Button
+                                            size="small"
+                                            icon={<DeleteOutlined />}
+                                            style={{ width: 150, borderRadius: 15, height: 30 }}
+                                        >{"Xóa"}
+                                        </Button>
+                                    </Popconfirm>
+                                </div></>
+                            :
+                            <Button
+                                size="small"
+                                onClick={() => {
+                                    Modal.info({
+                                        title: record.name,
+                                        content: (
+                                            <div dangerouslySetInnerHTML={{ __html: record.description }}></div>
+                                        ),
+                                        width: 800
+                                    });
+                                }}
+                                style={{ width: 150, borderRadius: 15, height: 30 }}
+                            >
+                                {"Xem"}
+                            </Button>
+                        }
                     </Row>
                 </div >
             ),
         },
     ];
 
+    const [userData, setUserData] = useState([]);
 
     useEffect(() => {
         (async () => {
             try {
+                const response = await userApi.getProfile();
+                console.log(response);
+                setUserData(response.user);
+
                 await newsApi.getListNews().then((res) => {
                     console.log(res);
                     setTotalList(res.totalDocs)
@@ -336,7 +361,8 @@ const NewsList = () => {
                                     <Col span="6">
                                         <Row justify="end">
                                             <Space>
-                                                <Button onClick={showModal} icon={<PlusOutlined />} style={{ marginLeft: 10 }} >Tạo tin tức</Button>
+                                                {userData.role == "isAdmin" ?
+                                                    <Button onClick={showModal} icon={<PlusOutlined />} style={{ marginLeft: 10 }} >Tạo tin tức</Button> : null}
                                             </Space>
                                         </Row>
                                     </Col>

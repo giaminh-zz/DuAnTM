@@ -101,6 +101,12 @@ function Sidebar() {
       link: "/tournament",
       icon: <SafetyCertificateOutlined />
     },
+    {
+      key: "news-list",
+      title: "Xem sự kiện",
+      link: "/news-list",
+      icon: <MessageOutlined />
+    },
   ];
 
   useEffect(() => {
