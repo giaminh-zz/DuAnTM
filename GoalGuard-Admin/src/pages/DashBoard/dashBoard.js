@@ -27,6 +27,8 @@ import productTypeAPI from '../../apis/productTypeApi';
 import productAPI from '../../apis/productApi';
 import tournamentApi from '../../apis/tournamentApi';
 import courtsManagementApi from '../../apis/courtsManagementApi';
+import userApi from '../../apis/userApi';
+import statisticsApi from '../../apis/statisticsApi';
 
 
 const DashBoard = () => {
@@ -38,16 +40,29 @@ const DashBoard = () => {
     const [tournament, setTournament] = useState(null);
     const [product, setProduct] = useState(null);
     const [courts, setCourts] = useState(null);
+    const [userData, setUserData] = useState([]);
+    const [statisticListSeller, setStatisticListSeller] = useState([]);
 
     useEffect(() => {
         (async () => {
             try {
-                
+
+                const response = await userApi.getProfile();
+                console.log(response);
+                setUserData(response.user);
+
                 await fieldtypesApi.getAllFieldTypes().then((res) => {
                     console.log(res);
                     setTotalList(res)
                     setLoading(false);
                 });
+
+                await statisticsApi.getAllStatistics(response.user.id).then((res) => {
+                    console.log(res);
+                    setStatisticListSeller(res)
+                    setLoading(false);
+                });
+
 
                 await productTypeAPI.getAllProductTypes().then((res) => {
                     console.log(res);
@@ -55,7 +70,7 @@ const DashBoard = () => {
                     setLoading(false);
                 });
 
-                
+
                 await productAPI.getAllProducts().then((res) => {
                     console.log(res);
                     setProduct(res)
@@ -106,106 +121,109 @@ const DashBoard = () => {
                             </Breadcrumb.Item>
                         </Breadcrumb>
                     </div>
-                    <Row gutter={12} style={{ marginTop: 20 }}>
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{statisticList?.userCount}</div>
-                                        <div className='title_total'>Số thành viên</div>
-                                    </div>
-                                    <div>
-                                        <ContactsTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{total?.length}</div>
-                                        <div className='title_total'>Tổng loại sân</div>
-                                    </div>
-                                    <div>
-                                        <NotificationTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                        
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{area?.length}</div>
-                                        <div className='title_total'>Số khu vực</div>
-                                    </div>
-                                    <div>
-                                        <EnvironmentTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
 
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{type?.length}</div>
-                                        <div className='title_total'>Số loại dịch vụ</div>
-                                    </div>
-                                    <div>
-                                        <ShoppingTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                    </Row>
+                    {userData.role === "isAdmin" ?
+                        <>
+                            <Row gutter={12} style={{ marginTop: 20 }}>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{statisticList?.userCount}</div>
+                                                <div className='title_total'>Số thành viên</div>
+                                            </div>
+                                            <div>
+                                                <ContactsTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{total?.length}</div>
+                                                <div className='title_total'>Tổng loại sân</div>
+                                            </div>
+                                            <div>
+                                                <NotificationTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
 
-                    <Row gutter={12} style={{ marginTop: 20 }}>
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{product?.length}</div>
-                                        <div className='title_total'>Số dịch vụ</div>
-                                    </div>
-                                    <div>
-                                        <FolderOpenTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{tournament?.length}</div>
-                                        <div className='title_total'>Tổng số giải đấu</div>
-                                    </div>
-                                    <div>
-                                        <HddTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
-                        
-                        <Col span={6}>
-                            <Card className="card_total" bordered={false}>
-                                <div className='card_number'>
-                                    <div>
-                                        <div className='number_total'>{courts?.length}</div>
-                                        <div className='title_total'>Số giải đấu</div>
-                                    </div>
-                                    <div>
-                                        <ShopTwoTone style={{ fontSize: 48 }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Col>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{area?.length}</div>
+                                                <div className='title_total'>Số khu vực</div>
+                                            </div>
+                                            <div>
+                                                <EnvironmentTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
 
-                        {/* <Col span={6}>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{type?.length}</div>
+                                                <div className='title_total'>Số loại dịch vụ</div>
+                                            </div>
+                                            <div>
+                                                <ShoppingTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={12} style={{ marginTop: 20 }}>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{product?.length}</div>
+                                                <div className='title_total'>Số dịch vụ</div>
+                                            </div>
+                                            <div>
+                                                <FolderOpenTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{tournament?.length}</div>
+                                                <div className='title_total'>Tổng số giải đấu</div>
+                                            </div>
+                                            <div>
+                                                <HddTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{courts?.length}</div>
+                                                <div className='title_total'>Số giải đấu</div>
+                                            </div>
+                                            <div>
+                                                <ShopTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+
+                                {/* <Col span={6}>
                             <Card className="card_total" bordered={false}>
                                 <div className='card_number'>
                                     <div>
@@ -218,7 +236,83 @@ const DashBoard = () => {
                                 </div>
                             </Card>
                         </Col> */}
-                    </Row>
+                            </Row>
+                        </> :
+                        <>
+                            <Row gutter={12} style={{ marginTop: 20 }}>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{statisticListSeller?.courts?.length}</div>
+                                                <div className='title_total'>Số sân bóng</div>
+                                            </div>
+                                            <div>
+                                                <ContactsTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{statisticListSeller?.products?.length}</div>
+                                                <div className='title_total'>Số sản phẩm</div>
+                                            </div>
+                                            <div>
+                                                <NotificationTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{statisticListSeller?.tournaments?.length}</div>
+                                                <div className='title_total'>Số giải đấu</div>
+                                            </div>
+                                            <div>
+                                                <EnvironmentTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{statisticListSeller?.bookings?.length || 0}</div>
+                                                <div className='title_total'>Số lượt đặt sân</div>
+                                            </div>
+                                            <div>
+                                                <ShoppingTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={12} style={{ marginTop: 20 }}>
+                                <Col span={6}>
+                                    <Card className="card_total" bordered={false}>
+                                        <div className='card_number'>
+                                            <div>
+                                                <div className='number_total'>{product?.orders?.length || 0}</div>
+                                                <div className='title_total'>Số lượt order dịch vụ</div>
+                                            </div>
+                                            <div>
+                                                <FolderOpenTwoTone style={{ fontSize: 48 }} />
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </>
+                    }
                 </div>
                 <BackTop style={{ textAlign: 'right' }} />
             </Spin>
