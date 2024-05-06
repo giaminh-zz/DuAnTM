@@ -42,3 +42,33 @@ exports.revenueStatistics = async (req, res) => {
         res.status(500).json({ message: 'Error getting revenue statistics' });
     }
 };
+
+exports.statistics = async (req, res) => {
+    const userId = req.params.user_id;
+
+    try {
+        // Thực hiện truy vấn các bảng để lấy thông tin liên quan đến user_id cung cấp
+        const [userData] = await db.execute('SELECT * FROM users WHERE id = ?', [userId]);
+        const [bookingData] = await db.execute('SELECT * FROM bookings WHERE user_id = ?', [userId]);
+        const [orderData] = await db.execute('SELECT * FROM orders WHERE user_id = ?', [userId]);
+        const [tournamentData] = await db.execute('SELECT * FROM tournaments WHERE id_users = ?', [userId]);
+        const [productData] = await db.execute('SELECT * FROM products WHERE id_user = ?', [userId]);
+        const [courtData] = await db.execute('SELECT * FROM courts WHERE id_users = ?', [userId]);
+
+        // Tổng hợp thông tin từ các bảng
+        const statistics = {
+            user: userData[0], // Thông tin người dùng
+            bookings: bookingData, // Thông tin đặt sân
+            orders: orderData, // Thông tin đơn hàng
+            tournaments: tournamentData, // Thông tin giải đấu
+            products: productData, // Thông tin sản phẩm
+            courts: courtData, // Thông tin sân tennis
+            // Thêm các thông tin từ các bảng khác vào đây nếu cần
+        };
+
+        res.json(statistics);
+    } catch (error) {
+        console.error('Error retrieving statistics:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};

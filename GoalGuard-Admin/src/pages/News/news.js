@@ -549,12 +549,6 @@ const NewsList = () => {
                             <Form.Item
                                 name="description"
                                 label="Mô tả"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập mô tả!',
-                                    },
-                                ]}
                                 style={{ marginBottom: 10 }}
                             >
 

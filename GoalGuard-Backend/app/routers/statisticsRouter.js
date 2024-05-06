@@ -11,4 +11,6 @@ router.get('/count-customers-bookings', statisticsController.countCustomersAndBo
 // Thống kê doanh thu theo ngày, tháng, năm
 router.get('/revenue-statistics', statisticsController.revenueStatistics);
 
+router.get('/statistics/:user_id', statisticsController.statistics);
+
 module.exports = router;
