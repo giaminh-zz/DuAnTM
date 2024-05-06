@@ -20,6 +20,24 @@ const createTables = async () => {
 
         console.log('Table "users" created or already exists.');
 
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS employees (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                role VARCHAR(255),
+                status VARCHAR(255) DEFAULT 'active',
+                employee_code VARCHAR(255),
+                user_id INT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        `);
+
+        console.log('Table "employees" created or already exists.');
+
         // Tạo bảng "password_reset_tokens" nếu chưa tồn tại
         await db.execute(`
         CREATE TABLE IF NOT EXISTS password_reset_tokens (

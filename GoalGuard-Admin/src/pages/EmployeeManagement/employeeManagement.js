@@ -3,9 +3,10 @@ import { PageHeader } from '@ant-design/pro-layout';
 import { BackTop, Breadcrumb, Button, Modal, Form, Card, Col, Input, Popconfirm, Row, Space, Spin, Table, Tag, notification, message, Select } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import userApi from "../../apis/userApi";
+import employeeApi from "../../apis/employeeApi";
 import "./employeeManagement.css";
 import axiosClient from '../../apis/axiosClient';
+import userApi from '../../apis/userApi';
 
 const { Option } = Select;
 
@@ -40,6 +41,11 @@ const EmployeeManagement = () => {
             ),
         },
         {
+            title: 'Mã nhân viên',
+            dataIndex: 'employee_code',
+            key: 'employee_code',
+        },
+        {
             title: 'Tên',
             dataIndex: 'username',
             key: 'username',
@@ -59,11 +65,6 @@ const EmployeeManagement = () => {
             key: 'email',
         },
         {
-            title: 'Số điện thoại',
-            dataIndex: 'phone',
-            key: 'phone',
-        },
-        {
             title: 'Role',
             dataIndex: 'role',
             key: 'role',
@@ -74,13 +75,13 @@ const EmployeeManagement = () => {
                         text === "isAdmin" ?
                             <Tag color="blue" key={text} style={{ width: 120, textAlign: "center" }} icon={<CopyOutlined />}>
                                 Quản lý
-                            </Tag> : text === "isSeller" ?
+                            </Tag> : text === "isEmployee" ?
                                 <Tag color="green" key={text} style={{ width: 120, textAlign: "center" }} icon={<CheckCircleOutlined />}>
                                     Nhân viên
-                                </Tag> :  text === "isClient" ?
-                                        <Tag color="geekblue" key={text} style={{ width: 120, textAlign: "center" }} icon={<UserOutlined />}>
-                                            Khách hàng
-                                        </Tag> : null
+                                </Tag> : text === "isClient" ?
+                                    <Tag color="geekblue" key={text} style={{ width: 120, textAlign: "center" }} icon={<UserOutlined />}>
+                                        Khách hàng
+                                    </Tag> : null
                     }
                 </Space>
             ),
@@ -149,9 +150,10 @@ const EmployeeManagement = () => {
 
     const handleListUser = async () => {
         try {
-            const response = await userApi.listUserByAdmin({ page: 1, limit: 1000 });
+
+            const response = await employeeApi.getEmployeeByUserId(userData.id);
             console.log(response);
-            setUser(response.data);
+            setUser(response);
             setLoading(false);
         } catch (error) {
             console.log('Failed to fetch event list:' + error);
@@ -162,13 +164,15 @@ const EmployeeManagement = () => {
         const params = {
             "username": data.username,
             "email": data.email,
-            "phone": data.phone,
+            "employeeCode": data.employee_code,
             "password": data.password,
             "role": data.role,
-            "status": "actived"
+            "status": "actived",
+            "userId": userData.id,
+            "role": "isEmployee"
         }
         try {
-            await userApi.unBanAccount(params, data.id).then(response => {
+            await employeeApi.unBanAccount(params, data.id).then(response => {
                 if (response.message === "Email already exists") {
                     notification["error"]({
                         message: `Thông báo`,
@@ -199,13 +203,15 @@ const EmployeeManagement = () => {
         const params = {
             "username": data.username,
             "email": data.email,
-            "phone": data.phone,
+            "employeeCode": data.employee_code,
             "password": data.password,
             "role": data.role,
-            "status": "noactive"
+            "status": "noactive",
+            "userId": userData.id,
+            "role": "isEmployee"
         }
         try {
-            await userApi.banAccount(params, data.id).then(response => {
+            await employeeApi.banAccount(params, data.id).then(response => {
                 if (response === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -233,7 +239,7 @@ const EmployeeManagement = () => {
 
     const handleFilterEmail = async (email) => {
         try {
-            const response = await userApi.searchUser(email);
+            const response = await employeeApi.searchUser(email);
             setUser(response.data);
         } catch (error) {
             console.log('search to fetch user list:' + error);
@@ -255,12 +261,15 @@ const EmployeeManagement = () => {
             const formatData = {
                 "username": values.name,
                 "email": values.email,
-                "phone": values.phone,
+                "employeeCode": values.employee_code,
                 "password": values.password,
                 "role": values.role,
-                "status": "actived"
+                "status": "actived",
+                "userId": userData.id,
+                "role": "isEmployee"
+
             }
-            await axiosClient.post("/user", formatData)
+            await axiosClient.post("/employee/addEmployee", formatData)
                 .then(response => {
                     console.log(response)
                     if (response == "User with this phone number already exists") {
@@ -296,7 +305,6 @@ const EmployeeManagement = () => {
                                     });
                                     form.resetFields();
                                     handleList();
-                                    history.push("/account-management");
                                 }
                 }
                 );
@@ -317,12 +325,19 @@ const EmployeeManagement = () => {
         history.push("/account-management");
     }
 
+
+    const [userData, setUserData] = useState([]);
     const handleList = () => {
         (async () => {
             try {
-                const response = await userApi.listUserByAdmin({ page: 1, limit: 1000 });
+
+                const response = await userApi.getProfile();
                 console.log(response);
-                setUser(response.data);
+                setUserData(response.user);
+
+                const response2 = await employeeApi.getEmployeeByUserId(response.user.id);
+                console.log(response2);
+                setUser(response2);
                 setLoading(false);
             } catch (error) {
                 console.log('Failed to fetch user list:' + error);
@@ -458,42 +473,19 @@ const EmployeeManagement = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="phone"
-                            label="Số điện thoại"
+                            name="employee_code"
+                            label="Mã nhân viên"
                             hasFeedback
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng nhập số điện thoại!',
-                                },
-                                {
-                                    pattern: /^[0-9]{10}$/,
-                                    message: "Số điện thoại phải có 10 chữ số và chỉ chứa số",
+                                    message: 'Vui lòng nhập mã nhân viên!',
                                 },
                             ]}
                             style={{ marginBottom: 10 }}
                         >
 
-                            <Input placeholder="Số điện thoại" />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="role"
-                            label="Phân quyền"
-                            hasFeedback
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Vui lòng chọn phân quyền!',
-                                },
-                            ]}
-                            style={{ marginBottom: 10 }}
-                        >
-                            <Select placeholder="Chọn phân quyền">
-                                <Option value="isAdmin">Admin</Option>
-                                <Option value="isSeller">Nhân viên</Option>
-                                <Option value="isClient">Khách hàng</Option>
-                            </Select>
+                            <Input placeholder="Mã nhân viêni" />
                         </Form.Item>
 
                         <Form.Item >
