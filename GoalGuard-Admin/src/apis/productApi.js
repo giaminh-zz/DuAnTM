@@ -33,6 +33,14 @@ const productAPI = {
       throw error;
     }
   },
+  async getProductByUserId(id) {
+    try {
+        const response = await axiosClient.get(`/products/user/${id}`);
+        return response;
+    } catch (error) {
+        throw error;
+    }
+},
   async getAllProducts() {
     try {
       const response = await axiosClient.get('/products');

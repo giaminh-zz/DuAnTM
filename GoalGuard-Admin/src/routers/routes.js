@@ -122,6 +122,14 @@ const ProductType = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const ProductManagement = lazy(() => {
+    return Promise.all([
+        import('../pages/Admin/ProductManagement/productManagement'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
+
 
 const RouterURL = withRouter(({ location }) => {
 
@@ -208,6 +216,14 @@ const RouterURL = withRouter(({ location }) => {
                                 <ProductType />
                             </Suspense>
                         </PrivateRoute>
+
+                        <PrivateRoute exact path="/product-management">
+                            <Suspense fallback={<LoadingScreen />}>
+                                <ProductManagement />
+                            </Suspense>
+                        </PrivateRoute>
+
+                        
                         
                         <PrivateRoute exact path="/notfound">
                             <NotFound />
@@ -344,7 +360,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    <Route exact path="/family-management">
+                    <Route exact path="/product-management">
                         <DefaultContainer />
                     </Route>
 

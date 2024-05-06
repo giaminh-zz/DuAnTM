@@ -77,6 +77,12 @@ function Sidebar() {
       link: "/asset-management",
       icon: <ContainerOutlined />
     },
+    {
+      key: "product-management",
+      title: "Quản lý dịch vụ",
+      link: "/product-management",
+      icon: <BarsOutlined />
+    },
   ];
 
   useEffect(() => {

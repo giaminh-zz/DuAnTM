@@ -3,33 +3,69 @@ const db = require('../config/db');
 // Thêm hàng hóa mới
 exports.addProduct = async (req, res) => {
     try {
-        const { name, price, quantity, status, itemStatus, id_product_type, id_user, image } = req.body;
+        const { name, price, quantity, status, itemStatus, id_product_type, id_users, image } = req.body;
         const [result] = await db.execute(
             'INSERT INTO products (name, price, quantity, status, item_status, id_product_type, id_user, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [name, price, quantity, status, itemStatus, id_product_type, id_user, image]
+            [name, price, quantity, status, itemStatus, id_product_type, id_users, image]
         );
-        res.status(200).json({ id: result.insertId, name, price, quantity, status, itemStatus, id_product_type, id_user, image });
+        res.status(200).json({ id: result.insertId, name, price, quantity, status, itemStatus, id_product_type, id_users, image });
     } catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).json({ message: 'Error adding product' });
     }
 };
 
-// Sửa thông tin hàng hóa
 exports.updateProduct = async (req, res) => {
     try {
-        const { name, price, quantity, status, itemStatus, id_product_type, id_user, image } = req.body;
         const id = req.params.id;
-        await db.execute(
-            'UPDATE products SET name = ?, price = ?, quantity = ?, status = ?, item_status = ?, id_product_type = ?, id_user = ?, image = ? WHERE id = ?',
-            [name, price, quantity, status, itemStatus, id_product_type, id_user, image, id]
-        );
-        res.status(200).json({ id, name, price, quantity, status, itemStatus, id_product_type, id_user, image });
+        // Lấy thông tin hiện tại của sản phẩm từ cơ sở dữ liệu
+        const [currentProduct] = await db.execute('SELECT * FROM products WHERE id = ?', [id]);
+        if (currentProduct.length === 0) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        // Lấy dữ liệu mới từ req.body
+        const { name, price, quantity, status, itemStatus, id_product_type, id_user, image } = req.body;
+        // Tạo một đối tượng chứa các trường dữ liệu mới cần cập nhật
+        const updatedFields = {};
+        // So sánh và cập nhật các trường dữ liệu mới
+        if (name !== undefined && name !== currentProduct[0].name) {
+            updatedFields.name = name;
+        }
+        if (price !== undefined && price !== currentProduct[0].price) {
+            updatedFields.price = price;
+        }
+        if (quantity !== undefined && quantity !== currentProduct[0].quantity) {
+            updatedFields.quantity = quantity;
+        }
+        if (status !== undefined && status !== currentProduct[0].status) {
+            updatedFields.status = status;
+        }
+        if (itemStatus !== undefined && itemStatus !== currentProduct[0].item_status) {
+            updatedFields.item_status = itemStatus;
+        }
+        if (id_product_type !== undefined && id_product_type !== currentProduct[0].id_product_type) {
+            updatedFields.id_product_type = id_product_type;
+        }
+        if (id_user !== undefined && id_user !== currentProduct[0].id_user) {
+            updatedFields.id_user = id_user;
+        }
+        if (image !== undefined && image !== currentProduct[0].image) {
+            updatedFields.image = image;
+        }
+        if (Object.keys(updatedFields).length === 0) {
+            return res.status(400).json({ message: 'No fields to update' });
+        }
+        const values = Object.values(updatedFields);
+        values.push(id); 
+        const updateQuery = `UPDATE products SET ${Object.keys(updatedFields).map(field => `${field} = ?`).join(', ')} WHERE id = ?`;
+        await db.execute(updateQuery, values);
+        res.status(200).json({ id, ...updatedFields });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating product' });
     }
 };
+
 
 // Xóa hàng hóa
 exports.deleteProduct = async (req, res) => {
@@ -43,11 +79,18 @@ exports.deleteProduct = async (req, res) => {
     }
 };
 
-// Lấy thông tin hàng hóa theo ID
+// Lấy thông tin hàng hóa theo ID với thông tin người dùng và loại sản phẩm
 exports.getProductById = async (req, res) => {
     try {
         const id = req.params.id;
-        const [rows] = await db.execute('SELECT * FROM products WHERE id = ?', [id]);
+        const query = `
+            SELECT p.*, u.username AS user_name, pt.name AS product_type_name
+            FROM products p
+            INNER JOIN users u ON p.id_user = u.id
+            INNER JOIN product_types pt ON p.id_product_type = pt.id
+            WHERE p.id = ?
+        `;
+        const [rows] = await db.execute(query, [id]);
         if (rows.length > 0) {
             res.status(200).json(rows[0]);
         } else {
@@ -62,7 +105,13 @@ exports.getProductById = async (req, res) => {
 // Lấy tất cả hàng hóa
 exports.getAllProducts = async (req, res) => {
     try {
-        const [rows] = await db.execute('SELECT * FROM products');
+        const query = `
+            SELECT p.*, u.username AS user_name, pt.name AS product_type_name
+            FROM products p
+            INNER JOIN users u ON p.id_user = u.id
+            INNER JOIN product_types pt ON p.id_product_type = pt.id
+        `;
+        const [rows] = await db.execute(query);
         res.status(200).json(rows);
     } catch (error) {
         console.error(error);
@@ -79,5 +128,24 @@ exports.searchProducts = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error searching products' });
+    }
+};
+
+// Lấy thông tin hàng hóa theo ID người dùng
+exports.getProductsByUser = async (req, res) => {
+    try {
+        const id_users = req.params.id;
+        const query = `
+            SELECT p.*, u.username AS user_name, pt.name AS product_type_name
+            FROM products p
+            INNER JOIN users u ON p.id_user = u.id
+            INNER JOIN product_types pt ON p.id_product_type = pt.id
+            WHERE p.id_user = ?
+        `;
+        const [rows] = await db.execute(query, [id_users]);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting products by user id' });
     }
 };
