@@ -95,8 +95,6 @@ function Sidebar() {
       link: "/tournament",
       icon: <SafetyCertificateOutlined />
     },
-
-    
   ];
 
   useEffect(() => {

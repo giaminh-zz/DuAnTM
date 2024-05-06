@@ -15,9 +15,63 @@ exports.addTournament = async (req, res) => {
 // Sửa thông tin giải đấu
 exports.updateTournament = async (req, res) => {
     try {
-        const { name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image } = req.body;
         const id = req.params.id;
-        await db.execute('UPDATE tournaments SET name = ?, info = ?, teams = ?, matches = ?, group_count = ?, prizes = ?, status = ?, approval_status = ?, id_users = ?, image = ? WHERE id = ?', [name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image, id]);
+        const { name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image } = req.body;
+        let updateFields = [];
+        let updateValues = [];
+
+        // Kiểm tra và thêm vào danh sách các trường cần cập nhật
+        if (name) {
+            updateFields.push('name = ?');
+            updateValues.push(name);
+        }
+        if (info) {
+            updateFields.push('info = ?');
+            updateValues.push(info);
+        }
+        if (teams) {
+            updateFields.push('teams = ?');
+            updateValues.push(teams);
+        }
+        if (matches) {
+            updateFields.push('matches = ?');
+            updateValues.push(matches);
+        }
+        if (group_count) {
+            updateFields.push('group_count = ?');
+            updateValues.push(group_count);
+        }
+        if (prizes) {
+            updateFields.push('prizes = ?');
+            updateValues.push(prizes);
+        }
+        if (status) {
+            updateFields.push('status = ?');
+            updateValues.push(status);
+        }
+        if (approval_status) {
+            updateFields.push('approval_status = ?');
+            updateValues.push(approval_status);
+        }
+        if (id_users) {
+            updateFields.push('id_users = ?');
+            updateValues.push(id_users);
+        }
+        if (image) {
+            updateFields.push('image = ?');
+            updateValues.push(image);
+        }
+
+        // Tạo câu truy vấn cập nhật dựa trên danh sách các trường
+        const updateQuery = `UPDATE tournaments SET ${updateFields.join(', ')} WHERE id = ?`;
+
+        // Thêm id vào danh sách giá trị để truy vấn
+        updateValues.push(id);
+
+        // Thực hiện truy vấn cập nhật
+        await db.execute(updateQuery, updateValues);
+
+        // Trả về dữ liệu đã được cập nhật
         res.status(200).json({ id, name, info, teams, matches, group_count, prizes, status, approval_status, id_users, image });
     } catch (error) {
         console.error(error);

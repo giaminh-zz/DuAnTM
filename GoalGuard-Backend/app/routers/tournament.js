@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const TournamentController = require('../controllers/tournamentController');
 
+
+// Tìm kiếm giải đấu
+router.get('/search', TournamentController.searchTournaments);
+
 // Thêm giải đấu mới
 router.post('/', TournamentController.addTournament);
 
@@ -16,9 +20,6 @@ router.get('/:id', TournamentController.getTournamentById);
 
 // Lấy tất cả các giải đấu
 router.get('/', TournamentController.getAllTournaments);
-
-// Tìm kiếm giải đấu
-router.get('/search', TournamentController.searchTournaments);
 
 // Phê duyệt giải đấu
 router.put('/:id/approve', TournamentController.approveTournament);

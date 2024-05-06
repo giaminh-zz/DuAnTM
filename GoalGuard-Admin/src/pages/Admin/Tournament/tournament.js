@@ -55,18 +55,20 @@ const Tournament = () => {
     const handleOkUser = async (values) => {
         setLoading(true);
         try {
-            const categoryList = {
+            const tournamentInfo = {
                 "name": values.name,
-                "description": values.description,
-                "price": values.price,
-                "location": values.location,
-                "id_field_types": values.id_field_types,
-                "id_areas": values.id_areas,
-                "image": file,
+                "info": values.info,
+                "teams": values.teams,
+                "matches": values.matches,
+                "group_count": values.group_count,
+                "prizes": values.prizes,
+                "status": "active", 
+                "approval_status": "pending", 
                 "id_users": userData.id,
-                "status": "active"
+                "image": file, 
             };
-            return tournamentApi.addTournament(categoryList).then(response => {
+            
+            return tournamentApi.addTournament(tournamentInfo).then(response => {
                 if (response.message === "Asset with the same name already exists") {
                     notification["error"]({
                         message: `Thông báo`,
@@ -102,18 +104,19 @@ const Tournament = () => {
     const handleUpdateCategory = async (values) => {
         setLoading(true);
         try {
-            const categoryList = {
+            const tournamentInfo = {
                 "name": values.name,
-                "description": values.description,
-                "price": values.price,
-                "location": values.location,
-                "id_field_types": values.id_field_types,
-                "id_areas": values.id_areas,
-                "image": file,
+                "info": values.info,
+                "teams": values.teams,
+                "matches": values.matches,
+                "group_count": values.group_count,
+                "prizes": values.prizes,
+                "status": "active", 
+                "approval_status": "pending", 
                 "id_users": userData.id,
-                "status": "active"
+                "image": file, 
             };
-            return tournamentApi.updateTournament(categoryList, id).then(response => {
+            return tournamentApi.updateTournament(tournamentInfo, id).then(response => {
                 if (response.message === "Asset with the same name already exists") {
                     notification["error"]({
                         message: `Thông báo`,
@@ -218,8 +221,11 @@ const Tournament = () => {
                 setId(id);
                 form2.setFieldsValue({
                     name: response.name,
-                    description: response.description,
-                    price: response.price,
+                    info: response.info,
+                    teams: response.teams,
+                    matches: response.matches,
+                    group_count: response.group_count,
+                    prizes: response.prizes,
                     location: response.location,
                     id_field_types: response.id_field_types,
                     id_areas: response.id_areas,
@@ -234,8 +240,8 @@ const Tournament = () => {
 
     const handleFilter = async (name) => {
         try {
-            const res = await tournamentApi.searchTournaments(name);
-            setCategory(res.data);
+            const res = await tournamentApi.searchTournaments(name.target.value);
+            setCategory(res);
         } catch (error) {
             console.log('search to fetch category list:' + error);
         }
@@ -245,7 +251,7 @@ const Tournament = () => {
         console.log(data);
 
         try {
-            await tournamentApi.updateApprovalStatus(data.id, "approved").then(response => {
+            await tournamentApi.approveTournament(data.id, "approved").then(response => {
                 if (response.message === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -274,7 +280,7 @@ const Tournament = () => {
     const handleBanAccount = async (data) => {
         console.log(data);
         try {
-            await tournamentApi.updateApprovalStatus(data.id,"pending").then(response => {
+            await tournamentApi.approveTournament(data.id, "pending").then(response => {
                 if (response === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -312,7 +318,7 @@ const Tournament = () => {
             dataIndex: 'image',
             key: 'image',
             render: (image) => <img src={image} style={{ height: 80 }} />,
-            width: '10%'
+            width: '10%',
         },
         {
             title: 'Tên',
@@ -320,24 +326,34 @@ const Tournament = () => {
             key: 'name',
         },
         {
-            title: 'Mô tả',
-            dataIndex: 'description',
-            key: 'description',
+            title: 'Thông tin',
+            dataIndex: 'info',
+            key: 'info',
         },
         {
-            title: 'Khu vực',
-            dataIndex: 'area',
-            key: 'area',
+            title: 'Số đội',
+            dataIndex: 'teams',
+            key: 'teams',
         },
         {
-            title: 'Loại sân',
-            dataIndex: 'field_type',
-            key: 'field_type',
+            title: 'Số trận',
+            dataIndex: 'matches',
+            key: 'matches',
         },
         {
-            title: 'Người dùng',
-            dataIndex: 'user_name',
-            key: 'user_name',
+            title: 'Số bảng',
+            dataIndex: 'group_count',
+            key: 'group_count',
+        },
+        {
+            title: 'Giải thưởng',
+            dataIndex: 'prizes',
+            key: 'prizes',
+            render: (text, record) => {
+                // Định dạng số theo format tiền Việt Nam
+                const formattedPrize = Number(record.prizes).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                return formattedPrize;
+            },
         },
         {
             title: 'Trạng thái',
@@ -345,28 +361,12 @@ const Tournament = () => {
             key: 'status',
         },
         {
-            title: 'Giá trị',
-            dataIndex: 'price',
-            key: 'price',
-            render: (text, record) => {
-                // Định dạng số theo format tiền Việt Nam
-                const formattedCost = Number(record.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                return formattedCost;
-            },
-        },
-        {
-            title: 'Ngày tạo',
-            key: 'created_at',
-            dataIndex: 'created_at',
-            render: (text) => moment(text).format('YYYY-MM-DD'),
-        },
-        {
-            title: 'Phê duyệt',
+            title: 'Trạng thái phê duyệt',
             dataIndex: 'approval_status',
             key: 'approval_status',
             render: (approval) => {
-                return approval === 'pending' ? 'Chưa phê duyệt' : "Phê duyệt";
-            }
+                return approval === 'pending' ? 'Chưa phê duyệt' : 'Đã phê duyệt';
+            },
         },
         {
             title: 'Action',
@@ -576,10 +576,11 @@ const Tournament = () => {
                 >
                     <Form
                         form={form}
-                        name="courtCreate"
+                        name="tournamentCreate"
                         layout="vertical"
                         initialValues={{
-                            status: 'Đang sử dụng',
+                            status: 'active',
+                            approval_status: 'pending',
                         }}
                         scrollToFirstError
                     >
@@ -587,89 +588,86 @@ const Tournament = () => {
 
                             <Form.Item
                                 name="name"
-                                label="Tên sân"
+                                label="Tên giải đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập tên sân!',
+                                        message: 'Vui lòng nhập tên giải đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Tên sân" />
+                                <Input placeholder="Tên giải đấu" />
                             </Form.Item>
 
                             <Form.Item
-                                name="description"
-                                label="Mô tả"
+                                name="info"
+                                label="Thông tin"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập mô tả!',
+                                        message: 'Vui lòng nhập thông tin!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input.TextArea placeholder="Mô tả" />
+                                <Input.TextArea placeholder="Thông tin" />
                             </Form.Item>
 
                             <Form.Item
-                                name="price"
-                                label="Giá"
+                                name="teams"
+                                label="Số đội tham gia"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập giá!',
+                                        message: 'Vui lòng nhập số đội tham gia!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <InputNumber
-                                    placeholder="Giá"
-                                    style={{ width: '100%' }}
-                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} // Sử dụng dấu chấm làm phân cách hàng nghìn
-                                    parser={(value) => value.replace(/\./g, '')} // Loại bỏ dấu chấm khi phân tích
-                                />
+                                <InputNumber placeholder="Số đội tham gia" />
                             </Form.Item>
 
                             <Form.Item
-                                name="id_field_types"
-                                label="Loại sân"
+                                name="matches"
+                                label="Số trận đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng chọn loại sân!',
+                                        message: 'Vui lòng nhập số trận đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Select placeholder="Chọn loại sân">
-                                    {fieldTypes.map(fieldType => (
-                                        <Select.Option key={fieldType.id} value={fieldType.id}>
-                                            {fieldType.type}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                                <InputNumber placeholder="Số trận đấu" />
                             </Form.Item>
 
                             <Form.Item
-                                name="id_areas"
-                                label="Khu vực"
+                                name="group_count"
+                                label="Số bảng đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng chọn khu vực!',
+                                        message: 'Vui lòng nhập số bảng đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Select placeholder="Chọn khu vực">
-                                    {area.map(fieldType => (
-                                        <Select.Option key={fieldType.id} value={fieldType.id}>
-                                            {fieldType.name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                                <InputNumber placeholder="Số bảng đấu" />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="prizes"
+                                label="Giải thưởng"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng nhập giải thưởng!',
+                                    },
+                                ]}
+                                style={{ marginBottom: 10 }}
+                            >
+                                <Input placeholder="Giải thưởng" />
                             </Form.Item>
 
                             <Form.Item
@@ -727,91 +725,88 @@ const Tournament = () => {
                         scrollToFirstError
                     >
                         <Spin spinning={loading}>
-                            <Form.Item
+                        <Form.Item
                                 name="name"
-                                label="Tên sân"
+                                label="Tên giải đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập tên sân!',
+                                        message: 'Vui lòng nhập tên giải đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Tên sân" />
+                                <Input placeholder="Tên giải đấu" />
                             </Form.Item>
 
                             <Form.Item
-                                name="description"
-                                label="Mô tả"
+                                name="info"
+                                label="Thông tin"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập mô tả!',
+                                        message: 'Vui lòng nhập thông tin!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input.TextArea placeholder="Mô tả" />
+                                <Input.TextArea placeholder="Thông tin" />
                             </Form.Item>
 
                             <Form.Item
-                                name="price"
-                                label="Giá"
+                                name="teams"
+                                label="Số đội tham gia"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập giá!',
+                                        message: 'Vui lòng nhập số đội tham gia!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <InputNumber
-                                    placeholder="Giá"
-                                    style={{ width: '100%' }}
-                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} // Sử dụng dấu chấm làm phân cách hàng nghìn
-                                    parser={(value) => value.replace(/\./g, '')} // Loại bỏ dấu chấm khi phân tích
-                                />
+                                <InputNumber placeholder="Số đội tham gia" />
                             </Form.Item>
 
                             <Form.Item
-                                name="id_field_types"
-                                label="Loại sân"
+                                name="matches"
+                                label="Số trận đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng chọn loại sân!',
+                                        message: 'Vui lòng nhập số trận đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Select placeholder="Chọn loại sân">
-                                    {fieldTypes.map(fieldType => (
-                                        <Select.Option key={fieldType.id} value={fieldType.id}>
-                                            {fieldType.type}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                                <InputNumber placeholder="Số trận đấu" />
                             </Form.Item>
 
                             <Form.Item
-                                name="id_areas"
-                                label="Khu vực"
+                                name="group_count"
+                                label="Số bảng đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng chọn khu vực!',
+                                        message: 'Vui lòng nhập số bảng đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Select placeholder="Chọn khu vực">
-                                    {area.map(fieldType => (
-                                        <Select.Option key={fieldType.id} value={fieldType.id}>
-                                            {fieldType.name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                                <InputNumber placeholder="Số bảng đấu" />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="prizes"
+                                label="Giải thưởng"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng nhập giải thưởng!',
+                                    },
+                                ]}
+                                style={{ marginBottom: 10 }}
+                            >
+                                <Input placeholder="Giải thưởng" />
                             </Form.Item>
 
                             <Form.Item

@@ -9,7 +9,7 @@ const tournamentApi = {
       throw error;
     }
   },
-  async updateTournament(id, data) {
+  async updateTournament(data, id) {
     try {
       const response = await axiosClient.put(`/tournaments/${id}`, data);
       return response;
@@ -57,9 +57,9 @@ const tournamentApi = {
       throw error;
     }
   },
-  async approveTournament(id) {
+  async approveTournament(id, approval_status) {
     try {
-      const response = await axiosClient.put(`/tournaments/${id}/approve`);
+      const response = await axiosClient.put(`/tournaments/${id}/approve`, { approval_status });
       return response;
     } catch (error) {
       throw error;
