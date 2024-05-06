@@ -137,6 +137,7 @@ const AssetManagement = () => {
                         description:
                             'Chỉnh sửa sân bóng thành công',
                     });
+                    setUploadFile();
                     handleCategoryList();
                     setOpenModalUpdate(false);
                 }

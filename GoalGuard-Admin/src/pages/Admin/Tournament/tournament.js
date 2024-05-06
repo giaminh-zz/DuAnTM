@@ -140,6 +140,7 @@ const Tournament = () => {
                         description:
                             'Chỉnh sửa giải đấu thành công',
                     });
+                    setUploadFile();
                     handleCategoryList();
                     setOpenModalUpdate(false);
                 }

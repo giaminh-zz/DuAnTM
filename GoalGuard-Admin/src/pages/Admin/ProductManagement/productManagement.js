@@ -132,6 +132,7 @@ const ProductManagement = () => {
                         description:
                             'Chỉnh sửa dịch vụ thành công',
                     });
+                    setUploadFile();
                     handleCategoryList();
                     setOpenModalUpdate(false);
                 }

@@ -118,6 +118,7 @@ const NewsList = () => {
                         description:
                             'Chỉnh sửa tin tức thành công',
                     });
+                    setUploadFile();
                     handleCategoryList();
                     setOpenModalUpdate(false);
                 }
