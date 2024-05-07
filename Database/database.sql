@@ -36,7 +36,7 @@ CREATE TABLE `areas` (
 
 LOCK TABLES `areas` WRITE;
 /*!40000 ALTER TABLE `areas` DISABLE KEYS */;
-INSERT INTO `areas` VALUES (1,'Hòa Vang','active'),(2,'Hòa Khánh','active'),(3,'Liên chiểu','active');
+INSERT INTO `areas` VALUES (1,'Hòa Vang','inactive'),(2,'Hòa Khánh','active'),(3,'Liên chiểu','active');
 /*!40000 ALTER TABLE `areas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -99,7 +99,7 @@ CREATE TABLE `courts` (
   CONSTRAINT `courts_ibfk_1` FOREIGN KEY (`id_areas`) REFERENCES `areas` (`id`),
   CONSTRAINT `courts_ibfk_2` FOREIGN KEY (`id_field_types`) REFERENCES `field_types` (`id`),
   CONSTRAINT `courts_ibfk_3` FOREIGN KEY (`id_users`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -108,7 +108,43 @@ CREATE TABLE `courts` (
 
 LOCK TABLES `courts` WRITE;
 /*!40000 ALTER TABLE `courts` DISABLE KEYS */;
+INSERT INTO `courts` VALUES (1,'tes2',1,1,2,'approved','active',232.00,'https://firebasestorage.googleapis.com/v0/b/zalo-app-66612.appspot.com/o/1715021472613z5327710311386_768133cd67f4d717ae62d7eac05fda61.jpg?alt=media&token=24c4d0fa-49c2-45fc-90a6-fca29c038a30','tét2'),(3,'tt',2,1,2,'pending','active',23.00,'https://firebasestorage.googleapis.com/v0/b/zalo-app-66612.appspot.com/o/1715021434342z5208034853655_d54121dae5801ade8620a6657cdf9a99.jpg?alt=media&token=c843ef0a-e952-47d0-b51d-b0a69b7a2d77','tt');
 /*!40000 ALTER TABLE `courts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `employees`
+--
+
+DROP TABLE IF EXISTS `employees`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `employees` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT 'active',
+  `employee_code` varchar(255) DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `employees`
+--
+
+LOCK TABLES `employees` WRITE;
+/*!40000 ALTER TABLE `employees` DISABLE KEYS */;
+INSERT INTO `employees` VALUES (1,'nhân viên 01','nhanvien@gmail.com','$2b$10$oeSW2OnSpbOlCm/fvWvfVugvaV2AnAD9qpFFAViyZtOiP3cNvdeei','isEmployee','actived','kt01',2,'2024-05-06 19:26:58','2024-05-06 19:29:27');
+/*!40000 ALTER TABLE `employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -123,7 +159,7 @@ CREATE TABLE `field_types` (
   `type` varchar(255) NOT NULL,
   `status` varchar(255) DEFAULT 'active',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,8 +168,36 @@ CREATE TABLE `field_types` (
 
 LOCK TABLES `field_types` WRITE;
 /*!40000 ALTER TABLE `field_types` DISABLE KEYS */;
-INSERT INTO `field_types` VALUES (1,'Sân bóng đá 5 người - có nhân tạo','active');
+INSERT INTO `field_types` VALUES (1,'Sân bóng đá 5 người - có nhân tạo','active'),(2,'Sân bóng đá 4 người','inactive');
 /*!40000 ALTER TABLE `field_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `news`
+--
+
+DROP TABLE IF EXISTS `news`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `news` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  `image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `news`
+--
+
+LOCK TABLES `news` WRITE;
+/*!40000 ALTER TABLE `news` DISABLE KEYS */;
+INSERT INTO `news` VALUES (1,'tt','<div>ttt</div>','https://firebasestorage.googleapis.com/v0/b/zalo-app-66612.appspot.com/o/1715017433557Video-Man-Hinh_First_Frame.png?alt=media&token=3be4a61c-ffa6-4feb-acc9-af1ebd0fdfe0','2024-05-06 17:43:58','2024-05-06 17:43:58');
+/*!40000 ALTER TABLE `news` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -236,7 +300,7 @@ CREATE TABLE `product_types` (
   `name` varchar(255) NOT NULL,
   `status` varchar(255) DEFAULT 'active',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -245,6 +309,7 @@ CREATE TABLE `product_types` (
 
 LOCK TABLES `product_types` WRITE;
 /*!40000 ALTER TABLE `product_types` DISABLE KEYS */;
+INSERT INTO `product_types` VALUES (1,'Nước ngọt 1','inactive'),(2,'têt','active'),(3,'têt','active');
 /*!40000 ALTER TABLE `product_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -270,7 +335,7 @@ CREATE TABLE `products` (
   KEY `id_user` (`id_user`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`id_product_type`) REFERENCES `product_types` (`id`),
   CONSTRAINT `products_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -279,6 +344,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,'sdfds1',324.00,24,'active','new',1,2,'https://firebasestorage.googleapis.com/v0/b/zalo-app-66612.appspot.com/o/1715004631989Video-Man-Hinh_First_Frame.png?alt=media&token=cb2e742d-6ffd-4b98-b5dc-77e19f06b057');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -358,7 +424,7 @@ CREATE TABLE `tournaments` (
   PRIMARY KEY (`id`),
   KEY `id_users` (`id_users`),
   CONSTRAINT `tournaments_ibfk_1` FOREIGN KEY (`id_users`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -367,6 +433,7 @@ CREATE TABLE `tournaments` (
 
 LOCK TABLES `tournaments` WRITE;
 /*!40000 ALTER TABLE `tournaments` DISABLE KEYS */;
+INSERT INTO `tournaments` VALUES (1,'rể1','êr',2,3,4,10000,'active','pending',2,'https://firebasestorage.googleapis.com/v0/b/zalo-app-66612.appspot.com/o/1715016085756Video-Man-Hinh_First_Frame.png?alt=media&token=e1e66558-c610-49ad-8fd8-1e9b7c52934b');
 /*!40000 ALTER TABLE `tournaments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -412,4 +479,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-26 18:23:34
+-- Dump completed on 2024-05-07  9:51:25
