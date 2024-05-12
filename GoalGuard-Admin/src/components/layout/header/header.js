@@ -25,27 +25,6 @@ function Topbar() {
   }
 
 
-  const content = (
-    <div>
-      {notification.map((values, index) => {
-        return (
-          <div>
-            <List.Item style={{ padding: 0, margin: 0 }}>
-              <List.Item.Meta
-                style={{ width: 250, margin: 0 }}
-                avatar={<NotificationTwoTone style={{ fontSize: '20px', color: '#08c' }} />}
-                title={<a onClick={() => handleNotification(values.content, values.title)}>{values.title}</a>}
-                description={<p className="fixLine" dangerouslySetInnerHTML={{ __html: values.content }}></p>}
-              />
-            </List.Item>
-          </div>
-        )
-      })}
-    </div>
-  );
-
-
-
   useEffect(() => {
     (async () => {
       try {
@@ -71,7 +50,7 @@ function Topbar() {
               >
                 <Col style={{ paddingLeft: 10 }}>
                   <a href="#">
-                    <img style={{ height: 60 }} className="logo" alt="" src="https://img.thegioithethao.vn/media/logo/logo.webp" />
+                    <img style={{ height: 60 }} className="logo" alt="" src="https://img.thegioithethao.vn/media/logo/logo.svg" />
                   </a>
                 </Col>
               </Row>

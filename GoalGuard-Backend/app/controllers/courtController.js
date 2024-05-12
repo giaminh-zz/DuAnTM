@@ -139,3 +139,22 @@ exports.getCourtsByUserId = async (req, res) => {
         res.status(500).json({ message: 'Error getting courts by user id' });
     }
 };
+
+// Lấy thông tin sân theo id khu vực
+exports.getCourtsByAreaId = async (req, res) => {
+    try {
+        const id_areas = req.params.id;
+        const [rows] = await db.execute(`
+            SELECT courts.*, field_types.type AS field_type, areas.name AS area, users.username AS user_name
+            FROM courts
+            LEFT JOIN field_types ON courts.id_field_types = field_types.id
+            LEFT JOIN areas ON courts.id_areas = areas.id
+            LEFT JOIN users ON courts.id_users = users.id
+            WHERE courts.id_areas = ?
+        `, [id_areas]);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting courts by area id' });
+    }
+};
