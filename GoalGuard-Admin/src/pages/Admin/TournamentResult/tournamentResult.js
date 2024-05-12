@@ -27,16 +27,17 @@ import {
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import tournamentApi from "../../../apis/tournamentApi";
-import "./tournament.css";
+import "./tournamentResult.css";
 import fieldtypesApi from '../../../apis/fieldtypesApi';
 import uploadFileApi from '../../../apis/uploadFileApi';
 import userApi from '../../../apis/userApi';
 import { useHistory, useParams } from "react-router-dom";
 import areaManagementApi from '../../../apis/areaManagementApi';
+import tournamentResultApi from '../../../apis/tournamentResultApi';
 
 const { Option } = Select;
 
-const Tournament = () => {
+const TournamentResult = () => {
 
     const [category, setCategory] = useState([]);
     const [fieldTypes, setFieldTypes] = useState([]);
@@ -56,24 +57,17 @@ const Tournament = () => {
         setLoading(true);
         try {
             const tournamentInfo = {
-                "name": values.name,
-                "info": values.info,
-                "teams": values.teams,
-                "matches": values.matches,
-                "group_count": values.group_count,
-                "prizes": values.prizes,
-                "status": "active", 
-                "approval_status": "pending", 
-                "id_users": userData.id,
-                "image": file, 
+                "tournament_id": values.tournament_id,
+                "result_info": values.result_info,
+                "image": file,
             };
-            
-            return tournamentApi.addTournament(tournamentInfo).then(response => {
+
+            return tournamentResultApi.addTournamentResult(tournamentInfo).then(response => {
                 if (response.message === "Asset with the same name already exists") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            'Tên giải đấu không được trùng',
+                            'Tên kết quả giải đấu không được trùng',
                     });
                     setLoading(false);
                     return;
@@ -82,14 +76,14 @@ const Tournament = () => {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            'Tạo giải đấu thất bại',
+                            'Tạo kết quả giải đấu thất bại',
                     });
                 }
                 else {
                     notification["success"]({
                         message: `Thông báo`,
                         description:
-                            'Tạo giải đấu thành công',
+                            'Tạo kết quả giải đấu thành công',
                     });
                     setOpenModalCreate(false);
                     handleCategoryList();
@@ -105,23 +99,16 @@ const Tournament = () => {
         setLoading(true);
         try {
             const tournamentInfo = {
-                "name": values.name,
-                "info": values.info,
-                "teams": values.teams,
-                "matches": values.matches,
-                "group_count": values.group_count,
-                "prizes": values.prizes,
-                "status": "active", 
-                "approval_status": "pending", 
-                "id_users": userData.id,
-                "image": file, 
+                "tournament_id": values.tournament_id,
+                "result_info": values.result_info,
+                "image": file,
             };
-            return tournamentApi.updateTournament(tournamentInfo, id).then(response => {
+            return tournamentResultApi.updateTournamentResult(tournamentInfo, id).then(response => {
                 if (response.message === "Asset with the same name already exists") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            'Tên giải đấu không được trùng',
+                            'Tên kết quả giải đấu không được trùng',
                     });
                     setLoading(false);
                     return;
@@ -131,14 +118,14 @@ const Tournament = () => {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            'Chỉnh sửa giải đấu thất bại',
+                            'Chỉnh sửa kết quả giải đấu thất bại',
                     });
                 }
                 else {
                     notification["success"]({
                         message: `Thông báo`,
                         description:
-                            'Chỉnh sửa giải đấu thành công',
+                            'Chỉnh sửa kết quả giải đấu thành công',
                     });
                     setUploadFile();
                     handleCategoryList();
@@ -182,18 +169,23 @@ const Tournament = () => {
             });
         }
 
-    }
+        await tournamentResultApi.getAllTournamentResults().then((res) => {
+            console.log(res);
+            setResult(res);
+            setLoading(false);
+        });
 
+    }
 
     const handleDeleteCategory = async (id) => {
         setLoading(true);
         try {
-            await tournamentApi.deleteTournament(id).then(response => {
+            await tournamentResultApi.deleteTournamentResult(id).then(response => {
                 if (response.message === "Cannot delete the asset because it is referenced in another process or event.") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            "Không thể xóa giải đấu vì nó đã được sử dụng trong một giải đấu hoặc quá trình khác.",
+                            "Không thể xóa kết quả giải đấu vì nó đã được sử dụng trong một kết quả giải đấu hoặc quá trình khác.",
 
                     });
                     setLoading(false);
@@ -203,7 +195,7 @@ const Tournament = () => {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            'Xóa giải đấu thất bại',
+                            'Xóa kết quả giải đấu thất bại',
 
                     });
                     setLoading(false);
@@ -212,7 +204,7 @@ const Tournament = () => {
                     notification["success"]({
                         message: `Thông báo`,
                         description:
-                            'Xóa giải đấu thành công',
+                            'Xóa kết quả giải đấu thành công',
 
                     });
                     handleCategoryList();
@@ -231,18 +223,11 @@ const Tournament = () => {
         setOpenModalUpdate(true);
         (async () => {
             try {
-                const response = await tournamentApi.getTournamentById(id);
+                const response = await tournamentResultApi.getTournamentResultById(id);
                 setId(id);
                 form2.setFieldsValue({
-                    name: response.name,
-                    info: response.info,
-                    teams: response.teams,
-                    matches: response.matches,
-                    group_count: response.group_count,
-                    prizes: response.prizes,
-                    location: response.location,
-                    id_field_types: response.id_field_types,
-                    id_areas: response.id_areas,
+                    result_info: response.result_info,
+                    tournament_id: response.tournament_id,
                 });
                 console.log(form2);
                 setLoading(false);
@@ -254,70 +239,10 @@ const Tournament = () => {
 
     const handleFilter = async (name) => {
         try {
-            const res = await tournamentApi.searchTournaments(name.target.value);
+            const res = await tournamentResultApi.searchTournamentResults(name.target.value);
             setCategory(res);
         } catch (error) {
             console.log('search to fetch category list:' + error);
-        }
-    }
-
-    const handleUnBanAccount = async (data) => {
-        console.log(data);
-
-        try {
-            await tournamentApi.approveTournament(data.id, "approved").then(response => {
-                if (response.message === undefined) {
-                    notification["error"]({
-                        message: `Thông báo`,
-                        description:
-                            'Phê duyệt thất bại',
-
-                    });
-                }
-                else {
-                    notification["success"]({
-                        message: `Thông báo`,
-                        description:
-                            'Phê duyệt thành công',
-
-                    });
-                }
-                handleCategoryList();
-            }
-            );
-
-        } catch (error) {
-            console.log('Failed to fetch event list:' + error);
-        }
-    }
-
-    const handleBanAccount = async (data) => {
-        console.log(data);
-        try {
-            await tournamentApi.approveTournament(data.id, "pending").then(response => {
-                if (response === undefined) {
-                    notification["error"]({
-                        message: `Thông báo`,
-                        description:
-                            'Từ chối thất bại',
-
-                    });
-                }
-                else {
-                    notification["success"]({
-                        message: `Thông báo`,
-                        description:
-                            'Từ chối thành công',
-
-                    });
-                }
-                handleCategoryList();
-
-            }
-            );
-
-        } catch (error) {
-            console.log('Failed to fetch event list:' + error);
         }
     }
 
@@ -335,120 +260,47 @@ const Tournament = () => {
             width: '10%',
         },
         {
-            title: 'Tên',
-            dataIndex: 'name',
-            key: 'name',
+            title: 'Kết quả',
+            dataIndex: 'result_info',
+            key: 'result_info',
         },
+
         {
-            title: 'Thông tin',
-            dataIndex: 'info',
-            key: 'info',
+            title: 'Kết quả',
+            dataIndex: 'tournament_name',
+            key: 'tournament_name',
         },
-        {
-            title: 'Số đội',
-            dataIndex: 'teams',
-            key: 'teams',
-        },
-        {
-            title: 'Số trận',
-            dataIndex: 'matches',
-            key: 'matches',
-        },
-        {
-            title: 'Số bảng',
-            dataIndex: 'group_count',
-            key: 'group_count',
-        },
-        {
-            title: 'Giải thưởng',
-            dataIndex: 'prizes',
-            key: 'prizes',
-            render: (text, record) => {
-                // Định dạng số theo format tiền Việt Nam
-                const formattedPrize = Number(record.prizes).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                return formattedPrize;
-            },
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-        },
-        {
-            title: 'Trạng thái phê duyệt',
-            dataIndex: 'approval_status',
-            key: 'approval_status',
-            render: (approval) => {
-                return approval === 'pending' ? 'Chưa phê duyệt' : 'Đã phê duyệt';
-            },
-        },
+
         {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
                 <div>
                     <Row>
-                        {userData.role != "isSeller" ? (
-                            <>
-                                <Popconfirm
-                                    title="Bạn muốn phê duyệt giải đấu này?"
-                                    onConfirm={() => handleUnBanAccount(record)}
-                                    okText="Yes"
-                                    cancelText="No"
-                                >
-                                    <Button
-                                        size="small"
-                                        icon={<CheckCircleOutlined />}
-                                        style={{ width: 170, borderRadius: 15, height: 30 }}
-                                    >
-                                        {"Phê duyệt"}
-                                    </Button>
-                                </Popconfirm>
-                                <div
-                                    style={{ marginLeft: 10 }}>
-                                    <Popconfirm
-                                        title="Bạn muốn từ chối giải đấu này?"
-                                        onConfirm={() => handleBanAccount(record)}
-                                        okText="Yes"
-                                        cancelText="No"
-                                    >
-                                        <Button
-                                            size="small"
-                                            icon={<StopOutlined />}
-                                            style={{ width: 170, borderRadius: 15, height: 30 }}
-                                        >
-                                            {"Không phê duyệt"}
-                                        </Button>
-                                    </Popconfirm>
-                                </div>
-                            </>
-                        ) : (
-                            <>
+
+                        <Button
+                            size="small"
+                            icon={<EditOutlined />}
+                            style={{ width: 170, borderRadius: 15, height: 30 }}
+                            onClick={() => handleEditCategory(record.id)}
+                        >{"Chỉnh sửa"}
+                        </Button>
+                        <div
+                            style={{ marginLeft: 6 }}>
+                            <Popconfirm
+                                title="Bạn có chắc chắn xóa kết quả giải đấu này?"
+                                onConfirm={() => handleDeleteCategory(record.id)}
+                                okText="Yes"
+                                cancelText="No"
+                            >
                                 <Button
                                     size="small"
-                                    icon={<EditOutlined />}
+                                    icon={<DeleteOutlined />}
                                     style={{ width: 170, borderRadius: 15, height: 30 }}
-                                    onClick={() => handleEditCategory(record.id)}
-                                >{"Chỉnh sửa"}
+                                >{"Xóa"}
                                 </Button>
-                                <div
-                                    style={{ marginLeft: 6 }}>
-                                    <Popconfirm
-                                        title="Bạn có chắc chắn xóa giải đấu này?"
-                                        onConfirm={() => handleDeleteCategory(record.id)}
-                                        okText="Yes"
-                                        cancelText="No"
-                                    >
-                                        <Button
-                                            size="small"
-                                            icon={<DeleteOutlined />}
-                                            style={{ width: 170, borderRadius: 15, height: 30 }}
-                                        >{"Xóa"}
-                                        </Button>
-                                    </Popconfirm>
-                                </div>
-                            </>
-                        )}
+                            </Popconfirm>
+                        </div>
                     </Row>
                 </div>
             ),
@@ -468,18 +320,13 @@ const Tournament = () => {
 
 
     const [userData, setUserData] = useState([]);
-    const [area, setArea] = useState([]);
+    const [result, setResult] = useState([]);
 
 
     useEffect(() => {
         (async () => {
             try {
 
-                await areaManagementApi.getAllAreas().then((res) => {
-                    console.log(res);
-                    setArea(res);
-                    setLoading(false);
-                });
 
                 const response = await userApi.getProfile();
                 console.log(response);
@@ -503,9 +350,9 @@ const Tournament = () => {
                 }
 
 
-                await fieldtypesApi.getAllFieldTypes().then((res) => {
+                await tournamentResultApi.getAllTournamentResults().then((res) => {
                     console.log(res);
-                    setFieldTypes(res);
+                    setResult(res);
                     setLoading(false);
                 });
                 ;
@@ -525,7 +372,7 @@ const Tournament = () => {
                             </Breadcrumb.Item>
                             <Breadcrumb.Item href="">
                                 <ShoppingOutlined />
-                                <span>Quản lý giải đấu</span>
+                                <span>Quản lý kết quả giải đấu</span>
                             </Breadcrumb.Item>
                         </Breadcrumb>
                     </div>
@@ -552,7 +399,7 @@ const Tournament = () => {
                                             <Space>
                                                 {userData.role !== "isAdmin" ?
 
-                                                    <Button onClick={showModal} icon={<PlusOutlined />} style={{ marginLeft: 10 }} >Tạo giải đấu</Button> : null}
+                                                    <Button onClick={showModal} icon={<PlusOutlined />} style={{ marginLeft: 10 }} >Tạo kết quả giải đấu</Button> : null}
 
                                             </Space>
                                         </Row>
@@ -564,12 +411,12 @@ const Tournament = () => {
                     </div>
 
                     <div style={{ marginTop: 30 }}>
-                        <Table columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={category} />
+                        <Table columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={result} />
                     </div>
                 </div>
 
                 <Modal
-                    title="Tạo giải đấu mới"
+                    title="Tạo kết quả giải đấu mới"
                     visible={openModalCreate}
                     style={{ top: 100 }}
                     onOk={() => {
@@ -601,88 +448,39 @@ const Tournament = () => {
                         <Spin spinning={loading}>
 
                             <Form.Item
-                                name="name"
-                                label="Tên giải đấu"
+                                name="tournament_id"
+                                label="Giải đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập tên giải đấu!',
+                                        message: 'Vui lòng chọn giải đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Tên giải đấu" />
+                                <Select placeholder="Chọn giải đấu">
+                                    {category.map(fieldType => (
+                                        <Select.Option key={fieldType.id} value={fieldType.id}>
+                                            {fieldType.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
 
                             <Form.Item
-                                name="info"
-                                label="Thông tin"
+                                name="result_info"
+                                label="Kết quả"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập thông tin!',
+                                        message: 'Vui lòng nhập kết quả!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input.TextArea placeholder="Thông tin" />
+                                <Input.TextArea placeholder="Kết quả" />
                             </Form.Item>
 
-                            <Form.Item
-                                name="teams"
-                                label="Số đội tham gia"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập số đội tham gia!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <InputNumber placeholder="Số đội tham gia" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="matches"
-                                label="Số trận đấu"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập số trận đấu!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <InputNumber placeholder="Số trận đấu" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="group_count"
-                                label="Số bảng đấu"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập số bảng đấu!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <InputNumber placeholder="Số bảng đấu" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="prizes"
-                                label="Giải thưởng"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập giải thưởng!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Input placeholder="Giải thưởng" />
-                            </Form.Item>
 
                             <Form.Item
                                 name="image"
@@ -709,7 +507,7 @@ const Tournament = () => {
                 </Modal>
 
                 <Modal
-                    title="Chỉnh giải đấu"
+                    title="Chỉnh kết quả giải đấu"
                     visible={openModalUpdate}
                     style={{ top: 100 }}
                     onOk={() => {
@@ -739,89 +537,40 @@ const Tournament = () => {
                         scrollToFirstError
                     >
                         <Spin spinning={loading}>
-                        <Form.Item
-                                name="name"
-                                label="Tên giải đấu"
+                            <Form.Item
+                                name="tournament_id"
+                                label="Giải đấu"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập tên giải đấu!',
+                                        message: 'Vui lòng chọn giải đấu!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input placeholder="Tên giải đấu" />
+                                <Select placeholder="Chọn giải đấu">
+                                    {category.map(fieldType => (
+                                        <Select.Option key={fieldType.id} value={fieldType.id}>
+                                            {fieldType.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
 
                             <Form.Item
-                                name="info"
-                                label="Thông tin"
+                                name="result_info"
+                                label="Kết quả"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập thông tin!',
+                                        message: 'Vui lòng nhập kết quả!',
                                     },
                                 ]}
                                 style={{ marginBottom: 10 }}
                             >
-                                <Input.TextArea placeholder="Thông tin" />
+                                <Input.TextArea placeholder="Kết quả" />
                             </Form.Item>
 
-                            <Form.Item
-                                name="teams"
-                                label="Số đội tham gia"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập số đội tham gia!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <InputNumber placeholder="Số đội tham gia" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="matches"
-                                label="Số trận đấu"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập số trận đấu!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <InputNumber placeholder="Số trận đấu" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="group_count"
-                                label="Số bảng đấu"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập số bảng đấu!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <InputNumber placeholder="Số bảng đấu" />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="prizes"
-                                label="Giải thưởng"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập giải thưởng!',
-                                    },
-                                ]}
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Input placeholder="Giải thưởng" />
-                            </Form.Item>
 
                             <Form.Item
                                 name="image"
@@ -846,4 +595,4 @@ const Tournament = () => {
     )
 }
 
-export default Tournament;
+export default TournamentResult;

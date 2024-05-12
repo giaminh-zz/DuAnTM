@@ -1,4 +1,4 @@
-import { MessageOutlined,AuditOutlined, ContainerOutlined, BarsOutlined, DashboardOutlined, FileDoneOutlined, ShoppingOutlined, UserOutlined, HeatMapOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { MessageOutlined, AuditOutlined, ContainerOutlined, BarsOutlined, DashboardOutlined, FundProjectionScreenOutlined, FileDoneOutlined, ShoppingOutlined, UserOutlined, HeatMapOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from "react-router-dom";
@@ -73,7 +73,7 @@ function Sidebar() {
       link: "/notifications",
       icon: <AuditOutlined />
     },
-   
+
   ];
 
   const menuSidebarHost = [
@@ -108,6 +108,12 @@ function Sidebar() {
       icon: <SafetyCertificateOutlined />
     },
     {
+      key: "tournament-result",
+      title: "Kết quả giải đấu",
+      link: "/tournament-result",
+      icon: <FundProjectionScreenOutlined />
+    },
+    {
       key: "news-list",
       title: "Xem sự kiện",
       link: "/news-list",
@@ -130,55 +136,55 @@ function Sidebar() {
 
   return (
     <Sider
-    className={'ant-layout-sider-trigger'}
-    width={230}
-    style={{
-      position: "fixed",
-      top: 70,
-      height: 'calc(100% - 60px)',
-      left: 0,
-      padding: 0,
-      zIndex: 1,
-      marginTop: 0,
-      boxShadow: " 0 1px 4px -1px rgb(0 0 0 / 15%)",
-      overflowY: 'auto',
-      background: '#FFFFFF'
-    }}
-  >
-    <Menu
-      mode="inline"
-      selectedKeys={location.pathname.split("/")}
-      defaultOpenKeys={['account']}
-      style={{ height: '100%', borderRight: 0, backgroundColor: "#FFFFFF" }}
-      theme='light'
+      className={'ant-layout-sider-trigger'}
+      width={230}
+      style={{
+        position: "fixed",
+        top: 70,
+        height: 'calc(100% - 60px)',
+        left: 0,
+        padding: 0,
+        zIndex: 1,
+        marginTop: 0,
+        boxShadow: " 0 1px 4px -1px rgb(0 0 0 / 15%)",
+        overflowY: 'auto',
+        background: '#FFFFFF'
+      }}
     >
+      <Menu
+        mode="inline"
+        selectedKeys={location.pathname.split("/")}
+        defaultOpenKeys={['account']}
+        style={{ height: '100%', borderRight: 0, backgroundColor: "#FFFFFF" }}
+        theme='light'
+      >
 
-      {user.role === "isSeller" ? (
-        menuSidebarHost.map((map) => (
-          <Menu.Item
-            onClick={() => navigate(map.link, map.key)}
-            key={map.key}
-            icon={map.icon}
-            className="customeClass"
-          >
-            {map.title}
-          </Menu.Item>
-        ))
-      ) : user.role === "isAdmin" ? (
-        menuSidebarAdmin.map((map) => (
-          <Menu.Item
-            onClick={() => navigate(map.link, map.key)}
-            key={map.key}
-            icon={map.icon}
-            className="customeClass"
-          >
-            {map.title}
-          </Menu.Item>
-        ))
-      ) : null}
-    </Menu>
+        {user.role === "isSeller" ? (
+          menuSidebarHost.map((map) => (
+            <Menu.Item
+              onClick={() => navigate(map.link, map.key)}
+              key={map.key}
+              icon={map.icon}
+              className="customeClass"
+            >
+              {map.title}
+            </Menu.Item>
+          ))
+        ) : user.role === "isAdmin" ? (
+          menuSidebarAdmin.map((map) => (
+            <Menu.Item
+              onClick={() => navigate(map.link, map.key)}
+              key={map.key}
+              icon={map.icon}
+              className="customeClass"
+            >
+              {map.title}
+            </Menu.Item>
+          ))
+        ) : null}
+      </Menu>
 
-  </Sider >
+    </Sider >
   );
 }
 

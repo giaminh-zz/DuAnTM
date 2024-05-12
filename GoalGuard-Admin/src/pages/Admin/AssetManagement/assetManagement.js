@@ -247,7 +247,7 @@ const AssetManagement = () => {
 
         try {
             await courtsManagementApi.updateApprovalStatus(data.id, "approved").then(response => {
-                if (response.message === undefined) {
+                if (response === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
                         description:

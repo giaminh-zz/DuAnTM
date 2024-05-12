@@ -154,6 +154,14 @@ const EmployeeManagement = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const TournamentResult = lazy(() => {
+    return Promise.all([
+        import('../pages/Admin/TournamentResult/tournamentResult'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
+
 const RouterURL = withRouter(({ location }) => {
 
 
@@ -267,6 +275,14 @@ const RouterURL = withRouter(({ location }) => {
                             </Suspense>
                         </PrivateRoute>
 
+                        <PrivateRoute exact path="/tournament-result">
+                            <Suspense fallback={<LoadingScreen />}>
+                                <TournamentResult />
+                            </Suspense>
+                        </PrivateRoute>
+
+                        
+
                         <PrivateRoute exact path="/notfound">
                             <NotFound />
                         </PrivateRoute>
@@ -329,7 +345,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    <Route exact path="/vendor-management">
+                    <Route exact path="/tournament-result">
                         <DefaultContainer />
                     </Route>
 

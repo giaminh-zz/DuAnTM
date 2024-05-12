@@ -9,7 +9,7 @@ const tournamentResultApi = {
       throw error;
     }
   },
-  async updateTournamentResult(id, data) {
+  async updateTournamentResult(data, id) {
     try {
       const response = await axiosClient.put(`/tournament-results/${id}`, data);
       return response;

@@ -15,15 +15,42 @@ exports.addTournamentResult = async (req, res) => {
 // Sửa kết quả giải đấu
 exports.updateTournamentResult = async (req, res) => {
     try {
-        const { tournament_id, result_info, image } = req.body;
         const id = req.params.id;
-        await db.execute('UPDATE tournament_results SET tournament_id = ?, result_info = ?, image = ? WHERE id = ?', [tournament_id, result_info, image, id]);
+        const { tournament_id, result_info, image } = req.body;
+        let updateFields = [];
+        let values = [];
+
+        // Kiểm tra và xây dựng danh sách các trường cần cập nhật
+        if (tournament_id !== undefined) {
+            updateFields.push('tournament_id = ?');
+            values.push(tournament_id);
+        }
+        if (result_info !== undefined) {
+            updateFields.push('result_info = ?');
+            values.push(result_info);
+        }
+        if (image !== undefined) {
+            updateFields.push('image = ?');
+            values.push(image);
+        }
+
+        // Kiểm tra xem có trường cần cập nhật không
+        if (updateFields.length === 0) {
+            return res.status(400).json({ message: 'No fields provided for update' });
+        }
+
+        // Thực hiện truy vấn cập nhật
+        const query = `UPDATE tournament_results SET ${updateFields.join(', ')} WHERE id = ?`;
+        values.push(id);
+        await db.execute(query, values);
+        
         res.status(200).json({ id, tournament_id, result_info, image });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating tournament result' });
     }
 };
+
 
 // Xóa kết quả giải đấu
 exports.deleteTournamentResult = async (req, res) => {
@@ -56,13 +83,18 @@ exports.getTournamentResultById = async (req, res) => {
 // Lấy tất cả kết quả giải đấu
 exports.getAllTournamentResults = async (req, res) => {
     try {
-        const [rows] = await db.execute('SELECT * FROM tournament_results');
+        const [rows] = await db.execute(`
+            SELECT tr.*, t.name AS tournament_name 
+            FROM tournament_results tr
+            INNER JOIN tournaments t ON tr.tournament_id = t.id
+        `);
         res.status(200).json(rows);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error getting tournament results' });
     }
 };
+
 
 // Tìm kiếm kết quả giải đấu
 exports.searchTournamentResults = async (req, res) => {
