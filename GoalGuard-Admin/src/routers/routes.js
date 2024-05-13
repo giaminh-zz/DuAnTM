@@ -162,6 +162,14 @@ const TournamentResult = lazy(() => {
         .then(([moduleExports]) => moduleExports);
 });
 
+const OrderList = lazy(() => {
+    return Promise.all([
+        import('../pages/OrderList/orderList'),
+        new Promise(resolve => setTimeout(resolve, 0))
+    ])
+        .then(([moduleExports]) => moduleExports);
+});
+
 const RouterURL = withRouter(({ location }) => {
 
 
@@ -194,6 +202,12 @@ const RouterURL = withRouter(({ location }) => {
                         <PrivateRoute exact path="/account-management">
                             <Suspense fallback={<LoadingScreen />}>
                                 <AccountManagement />
+                            </Suspense>
+                        </PrivateRoute>
+
+                        <PrivateRoute exact path="/order-list">
+                            <Suspense fallback={<LoadingScreen />}>
+                                <OrderList />
                             </Suspense>
                         </PrivateRoute>
 
@@ -280,8 +294,6 @@ const RouterURL = withRouter(({ location }) => {
                                 <TournamentResult />
                             </Suspense>
                         </PrivateRoute>
-
-                        
 
                         <PrivateRoute exact path="/notfound">
                             <NotFound />
@@ -405,7 +417,7 @@ const RouterURL = withRouter(({ location }) => {
                         <DefaultContainer />
                     </Route>
 
-                    <Route exact path="/emergency">
+                    <Route exact path="/order-list">
                         <DefaultContainer />
                     </Route>
 

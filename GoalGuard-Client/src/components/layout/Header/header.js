@@ -93,7 +93,7 @@ function Topbar() {
           Trang chủ
         </NavLink>
         <NavLink className={styles.navlink} to="/product-list/1" activeStyle>
-          Sản phẩm
+          Sân bóng
         </NavLink>
         <NavLink className={styles.navlink} to="/news" activeStyle>
           Sự kiện

@@ -44,8 +44,10 @@ const Home = () => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await courtsManagementApi.getAllCourts({ page: 1, limit: 10 })
-                setProductList(response)
+                const response = await courtsManagementApi.getAllCourts({ page: 1, limit: 10 });
+                // Lọc dữ liệu có approval_status khác "pending"
+                const filteredResponse = response.filter(item => item.approval_status !== "pending");
+                setProductList(filteredResponse);
                 setLoading(false);
             } catch (error) {
                 console.log('Failed to fetch event list:' + error);

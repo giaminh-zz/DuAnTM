@@ -21,6 +21,7 @@ import NewsDetail from "../pages/NewsDetai/newsDetai";
 import ChangePassword from "../pages/ChangePassword/changePassword";
 import Tournament from "../pages/Tournament/tournament";
 import TournamentDetai from "../pages/TournamentDetai/tournamentDetai";
+import ResetPassword from "../pages/ResetPassword/resetPassword";
 
 
 const RouterURL = withRouter(({ location }) => {
@@ -45,7 +46,6 @@ const RouterURL = withRouter(({ location }) => {
                     <PrivateRoute exact path="/product-list/:id">
                         <ProductList />
                     </PrivateRoute>
-
                     <PrivateRoute exact path="/change-password/:id">
                         <ChangePassword />
                     </PrivateRoute>
@@ -108,6 +108,9 @@ const RouterURL = withRouter(({ location }) => {
                     <PublicRoute exact path="/register">
                         <Register />
                     </PublicRoute>
+                    <PublicRoute exact path="/reset-password/:id">
+                        <ResetPassword />
+                    </PublicRoute>
                 </Layout>
             </Layout>
         </div>
@@ -130,6 +133,9 @@ const RouterURL = withRouter(({ location }) => {
                         <PublicContainer />
                     </Route>
                     <Route exact path="/login">
+                        <LoginContainer />
+                    </Route>
+                    <Route exact path="/reset-password/:id">
                         <LoginContainer />
                     </Route>
                     <Route exact path="/register">

@@ -27,6 +27,7 @@ const Profile = () => {
     const [userData, setUserData] = useState([]);
     const [isVisibleModal, setVisibleModal] = useState(false);
     const [file, setUploadFile] = useState();
+    const [image_qr, setImageQR] = useState();
 
     const { data, isLoading, errorMessage } = useOpenWeather({
         key: '03b81b9c18944e6495d890b189357388',
@@ -35,25 +36,33 @@ const Profile = () => {
         lang: 'en',
         unit: 'metric',
     });
-    const handleList = () => {
-        (async () => {
-            try {
-                const response = await userApi.getProfile();
-                console.log(response);
+    let isMounted = true; // Biến để theo dõi trạng thái mounted/unmounted của component
+
+    // Hàm để fetch dữ liệu và cập nhật state
+    const fetchData = async () => {
+        try {
+            const response = await userApi.getProfile();
+            if (isMounted) { // Kiểm tra component có được mounted không trước khi cập nhật state
                 setUserData(response.user);
                 setLoading(false);
-            } catch (error) {
-                console.log('Failed to fetch profile user:' + error);
             }
-        })();
-    }
+        } catch (error) {
+            console.log('Failed to fetch profile user:' + error);
+        }
+    };
 
     useEffect(() => {
-        (async () => {
-            handleList();
-        })();
-        window.scrollTo(0, 0);
-    }, [])
+
+
+
+        // Gọi hàm fetch dữ liệu
+        fetchData();
+
+        // Cleanup function để hủy bỏ các hoạt động bất đồng bộ khi component unmounts
+        return () => {
+            isMounted = false; // Đặt isMounted thành false khi component unmounts
+        };
+    }, []);
 
     const handleFormSubmit = async (values) => {
         try {
@@ -62,6 +71,7 @@ const Profile = () => {
                 "phone": values.phone,
                 "username": values.username,
                 "image": file,
+                "image_qr": image_qr
             };
             console.log(userData);
             await userApi.updateProfile(formatData, userData.id)
@@ -78,9 +88,11 @@ const Profile = () => {
                             description: 'Cập nhật tài khoản thành công',
                         });
                         setVisibleModal(false)
+                        setUploadFile();
+
                     }
                 });
-            handleList();
+            fetchData();
         } catch (error) {
             throw error;
         }
@@ -91,6 +103,15 @@ const Profile = () => {
         const response = await uploadFileApi.uploadFile(e);
         if (response) {
             setUploadFile(response);
+        }
+        setLoading(false);
+    }
+
+    const handleChangeImageQR = async (e) => {
+        setLoading(true);
+        const response = await uploadFileApi.uploadFile(e);
+        if (response) {
+            setImageQR(response);
         }
         setLoading(false);
     }
@@ -121,7 +142,7 @@ const Profile = () => {
                                             style={{
                                                 width: 150,
                                                 height: 150,
-                                                borderRadius: '50%', 
+                                                borderRadius: '50%',
                                             }}
                                         />
                                     </Row>
@@ -141,12 +162,25 @@ const Profile = () => {
                                             </Row>
                                             <Divider style={{ padding: 0, margin: 0 }} ></Divider>
                                         </Col>
-                                        <Button type="primary" style={{ marginTop: 15 }} onClick={() => setVisibleModal(true)}>Cập nhật Profile</Button>
-
+                                        <Button type="primary" style={{ marginTop: 15 , marginBottom: 15}} onClick={() => setVisibleModal(true)}>Cập nhật Profile</Button>
+                                     
                                     </Row>
-
+                                    <Row>
+                                        <p style={{ padding: 0, margin: 0, marginBottom: 15 }}>Ảnh QR thanh toán</p>
+                                        <img
+                                            src={userData?.image_qr}
+                                            style={{
+                                                width: 300,
+                                                height: 300,
+                                                marginTop: 30,
+                                            }}
+                                        />
+                                    </Row>
                                 </Card>
+
+
                             </Col>
+
 
                             <Col span="6" style={{ marginTop: 20 }}>
                                 <ReactWeather
@@ -224,6 +258,19 @@ const Profile = () => {
                                         accept="image/*"
                                         onChange={handleChangeImage}
                                         id="avatar"
+                                        name="file"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    name="image2"
+                                    label="Chọn ảnh QR"
+                                >
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleChangeImageQR}
+                                        id="avatar2"
                                         name="file"
                                     />
                                 </Form.Item>

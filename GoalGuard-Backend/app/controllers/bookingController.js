@@ -1,7 +1,7 @@
 const db = require('../config/db');
 const moment = require('moment');
 
-// API đặt sân
+
 exports.bookCourt = async (req, res) => {
     try {
         const { user_id, court_id, booking_date, start_time, end_time, payment_method, total_amount } = req.body;
@@ -18,8 +18,12 @@ exports.bookCourt = async (req, res) => {
             const newEndTime = moment(end_time, 'HH:mm');
 
             // Kiểm tra xem thời gian đặt sân mới có chồng lên thời gian của các đặt sân khác không
-            if ((newStartTime.isBetween(existingStartTime, existingEndTime) || newEndTime.isBetween(existingStartTime, existingEndTime) || 
-                existingStartTime.isBetween(newStartTime, newEndTime) || existingEndTime.isBetween(newStartTime, newEndTime))) {
+            if (
+                (newStartTime.isBetween(existingStartTime, existingEndTime, undefined, '[)') || 
+                newEndTime.isBetween(existingStartTime, existingEndTime, undefined, '(]')) ||
+                (existingStartTime.isBetween(newStartTime, newEndTime, undefined, '(]') ||
+                existingEndTime.isBetween(newStartTime, newEndTime, undefined, '[)'))
+            ) {
                 return res.status(200).json({ message: 'Booking time conflicts with existing booking' });
             }
         }
@@ -32,6 +36,7 @@ exports.bookCourt = async (req, res) => {
         res.status(500).json({ message: 'Error booking court' });
     }
 };
+
 
 
 // API xem lịch sử đặt sân của người dùng
@@ -67,6 +72,29 @@ exports.updateBookingStatus = async (req, res) => {
     }
 };
 
+// API lấy thông tin đặt sân của một chủ sân dựa trên user_id
+exports.getBookingByUserID = async (req, res) => {
+    try {
+        const user_id = req.params.user_id;
+        const [rows] = await db.execute(`
+            SELECT 
+                bookings.*, 
+                courts.name AS court_name,
+                users.username AS user_name,
+                owners.username AS owner_name
+            FROM bookings
+            INNER JOIN courts ON bookings.court_id = courts.id
+            INNER JOIN users ON bookings.user_id = users.id
+            INNER JOIN users AS owners ON courts.id_users = owners.id
+            WHERE courts.id_users = ?
+        `, [user_id]);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting booking by user id' });
+    }
+};
+
 // API lấy thông tin đặt sân theo court_id
 exports.getBookingByCourtId = async (req, res) => {
     try {
@@ -76,5 +104,28 @@ exports.getBookingByCourtId = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error getting booking by court id' });
+    }
+};
+
+// API lấy thông tin đặt sân theo ID
+exports.getBookingByID = async (req, res) => {
+    try {
+        const bookingId = req.params.id;
+        const [rows] = await db.execute(`
+            SELECT 
+                bookings.*, 
+                courts.name AS court_name,
+                users.username AS user_name,
+                owners.username AS owner_name
+            FROM bookings
+            INNER JOIN courts ON bookings.court_id = courts.id
+            INNER JOIN users ON bookings.user_id = users.id
+            INNER JOIN users AS owners ON courts.id_users = owners.id
+            WHERE bookings.id = ?
+        `, [bookingId]);
+        res.status(200).json(rows[0]); // Trả về kết quả đầu tiên, vì chỉ có một đặt sân có ID tương ứng
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting booking by ID' });
     }
 };

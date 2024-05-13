@@ -73,18 +73,25 @@ const authController = {
     forgotPassword: async (req, res) => {
         try {
             const token = crypto.randomBytes(20).toString('hex');
-
+    
             const [userRows] = await db.execute('SELECT * FROM users WHERE email = ?', [req.body.email]);
             const user = userRows[0];
-
+    
             if (!user) {
                 return res.status(400).json({ message: 'Unregistered account!', status: false });
             }
-
+    
+            let resetURL = 'http://localhost:3500'; // URL mặc định
+    
+            // Kiểm tra xem user có vai trò là isAdmin không
+            if (user.role === 'isAdmin') {
+                resetURL = 'http://localhost:3000';
+            }
+    
             await db.execute('INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
                 [user.id, token, new Date(Date.now() + 3600000)] // Thời gian hết hạn sau 1 giờ
             );
-
+    
             const transporter = nodemailer.createTransport({
                 host: 'smtp-relay.brevo.com',
                 port: '587',
@@ -93,14 +100,14 @@ const authController = {
                     pass: 'fScdnZ4WmEDqjBA1',
                 },
             });
-
+    
             const mailOptions = {
                 from: 'coms@gmail.com',
                 to: user.email,
                 subject: 'Reset Password',
-                text: `To reset your password, click on the following link: http://localhost:3000/reset-password/${token}`,
+                text: `To reset your password, click on the following link: ${resetURL}/reset-password/${token}`,
             };
-
+    
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.error(error);
@@ -114,6 +121,7 @@ const authController = {
             res.status(500).json(err);
         }
     },
+    
 
     resetPassword: async (req, res) => {
         try {

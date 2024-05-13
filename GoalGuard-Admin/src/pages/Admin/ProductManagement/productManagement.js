@@ -19,7 +19,7 @@ import {
     Space,
     Spin,
     Table,
-    notification,
+    notification
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';

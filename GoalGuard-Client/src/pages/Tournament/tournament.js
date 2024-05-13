@@ -13,12 +13,14 @@ const Tournament = () => {
   useEffect(() => {
     (async () => {
       try {
-        await tournamentApi.getAllTournaments().then((item) => {
-          setNews(item);
-        });
-      } catch (error) {
+        const item = await tournamentApi.getAllTournaments();
+        // Lọc dữ liệu có approval_status khác "pending"
+        const filteredItem = item.filter(item => item.approval_status !== "pending");
+        setNews(filteredItem);
+    } catch (error) {
         console.log("Failed to fetch event detail:" + error);
-      }
+    }
+    
     })();
     window.scrollTo(0, 0);
   }, []);

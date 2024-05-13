@@ -34,6 +34,12 @@ const userApi = {
         return axiosClient.get(url);
     },
 
+    getProfileByID(id) {
+        const url = '/user/profile/'+ id;
+        return axiosClient.get(url);
+    },
+
+
     updateProfile(data, id) {
         const url = '/user/updateProfile/' + id;
         return axiosClient.put(url, data);

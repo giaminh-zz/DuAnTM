@@ -27,7 +27,7 @@ const RegisterCustomer = () => {
                 "password": values.password,
                 "phone": values.phoneNo,
                 "role": "isClient",
-                "status": "actived"
+                "status": "noactive"
             }
             await axiosClient.post("http://localhost:3100/api/auth/register", formatData)
                 .then(response => {

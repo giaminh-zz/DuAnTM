@@ -13,6 +13,7 @@ import { numberWithCommas } from "../../../utils/common";
 import bookingApi from "../../../apis/bookingApi";
 import dayjs from 'dayjs';
 import moment from "moment";
+import userApi from "../../../apis/userApi";
 
 const { Option } = Select;
 
@@ -38,6 +39,7 @@ const ProductDetail = () => {
 
     const [userData, setUserData] = useState([]);
 
+    const [qr, setQR] = useState();
 
     const handleCategoryList = async () => {
         try {
@@ -45,7 +47,7 @@ const ProductDetail = () => {
                 console.log(item);
                 setBookingCourt(item);
             })
-            
+
             await courtsManagementApi.getCourtById(id).then((item) => {
                 setProductDetail(item);
                 setProductReview(item.reviews);
@@ -67,16 +69,22 @@ const ProductDetail = () => {
         (async () => {
             try {
 
-                await bookingApi.getBookingByCourt(id).then(item => {
+                await bookingApi.getBookingByCourt(id).then(async item => {
                     console.log(item);
                     setBookingCourt(item);
-                })
+
+
+                });
+
                 // Lấy thông tin user và role từ localStorage
                 const user = localStorage.getItem('user');
                 const parsedUser = user ? JSON.parse(user) : null;
                 setUserData(parsedUser);
 
-                await courtsManagementApi.getCourtById(id).then((item) => {
+                await courtsManagementApi.getCourtById(id).then(async item => {
+                    const res = await userApi.getProfileByID(item.id_users); // Sử dụng await ở đây
+                    console.log(res);
+                    setQR(res?.image_qr);
                     setProductDetail(item);
                     setProductReview(item.reviews);
                     setProductReviewCount(item.reviewStats);
@@ -170,6 +178,14 @@ const ProductDetail = () => {
         setOpenModalCreate(true);
     };
 
+    const isButtonDisabled = productDetail.status !== 'active' ? true : false;
+    const buttonText = isButtonDisabled ? 'Sân bóng đang đóng' : 'Đặt nhanh kẻo muộn';
+
+    function disabledDate(current) {
+        // Vô hiệu hóa tất cả các ngày quá khứ
+        return current && current < moment().startOf('day');
+    }
+    
     return (
         <div>
             <Spin spinning={false}>
@@ -286,8 +302,9 @@ const ProductDetail = () => {
                                             className="by"
                                             size="large"
                                             onClick={showModal}
+                                            disabled={isButtonDisabled} // Sử dụng biểu thức điều kiện để disable nút
                                         >
-                                            Đặt nhanh kẻo muộn
+                                            {buttonText}
                                         </Button>
 
                                     </div>
@@ -418,19 +435,22 @@ const ProductDetail = () => {
                         >
                             <Spin spinning={loading}>
 
-                                <Form.Item
-                                    name="booking_date"
-                                    label="Ngày đặt sân"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Vui lòng chọn ngày đặt sân!',
-                                        },
-                                    ]}
-                                    style={{ marginBottom: 10 }}
-                                >
-                                    <DatePicker style={{ width: '100%' }} />
-                                </Form.Item>
+                            <Form.Item
+            name="booking_date"
+            label="Ngày đặt sân"
+            rules={[
+                {
+                    required: true,
+                    message: 'Vui lòng chọn ngày đặt sân!',
+                },
+            ]}
+            style={{ marginBottom: 10 }}
+        >
+            <DatePicker
+                style={{ width: '100%' }}
+                disabledDate={disabledDate}
+            />
+        </Form.Item>
                                 <Form.Item
                                     name="start_time"
                                     label="Giờ bắt đầu"
@@ -520,6 +540,17 @@ const ProductDetail = () => {
                                     </Select>
                                 </Form.Item>
 
+                                <Form.Item
+                                    name="image_qr"
+                                    label="Ảnh QR thanh toán"
+                                    style={{ marginBottom: 10 }}
+                                >
+                                    {qr ? (
+                                        <img src={qr} alt="QR Code" style={{ maxWidth: '100%', height: 'auto' }} />
+                                    ) : (
+                                        <span>Ảnh QR không có sẵn</span>
+                                    )}
+                                </Form.Item>
 
 
                             </Spin>

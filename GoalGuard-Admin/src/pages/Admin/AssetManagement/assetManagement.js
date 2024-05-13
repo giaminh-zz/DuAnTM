@@ -64,7 +64,7 @@ const AssetManagement = () => {
                 "id_areas": values.id_areas,
                 "image": file,
                 "id_users": userData.id,
-                "status": "active"
+                "status": values.status
             };
             return courtsManagementApi.addCourt(categoryList).then(response => {
                 if (response.message === "Asset with the same name already exists") {
@@ -111,7 +111,7 @@ const AssetManagement = () => {
                 "id_areas": values.id_areas,
                 "image": file,
                 "id_users": userData.id,
-                "status": "active"
+                "status": values.status
             };
             return courtsManagementApi.updateCourt(categoryList, id).then(response => {
                 if (response.message === "Asset with the same name already exists") {
@@ -224,6 +224,7 @@ const AssetManagement = () => {
                     location: response.location,
                     id_field_types: response.id_field_types,
                     id_areas: response.id_areas,
+                    status: response.status
                 });
                 console.log(form2);
                 setLoading(false);
@@ -344,6 +345,10 @@ const AssetManagement = () => {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
+            render: (text, record) => {
+                const statusText = record.status === 'active' ? 'Hoạt động' : 'Không hoạt động';
+                return statusText;
+            },
         },
         {
             title: 'Giá trị',
@@ -675,6 +680,23 @@ const AssetManagement = () => {
                             </Form.Item>
 
                             <Form.Item
+                                name="status"
+                                label="Trạng thái"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng chọn trạng thái!',
+                                    },
+                                ]}
+                                style={{ marginBottom: 10 }}
+                            >
+                                <Select placeholder="Chọn trạng thái">
+                                    <Select.Option value="active">Hoạt động</Select.Option>
+                                    <Select.Option value="inactive">Không hoạt động</Select.Option>
+                                </Select>
+                            </Form.Item>
+
+                            <Form.Item
                                 name="image"
                                 label="Chọn ảnh"
                                 rules={[
@@ -813,6 +835,23 @@ const AssetManagement = () => {
                                             {fieldType.name}
                                         </Select.Option>
                                     ))}
+                                </Select>
+                            </Form.Item>
+
+                            <Form.Item
+                                name="status"
+                                label="Trạng thái"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng chọn trạng thái!',
+                                    },
+                                ]}
+                                style={{ marginBottom: 10 }}
+                            >
+                                <Select placeholder="Chọn trạng thái">
+                                    <Select.Option value="active">Hoạt động</Select.Option>
+                                    <Select.Option value="inactive">Không hoạt động</Select.Option>
                                 </Select>
                             </Form.Item>
 

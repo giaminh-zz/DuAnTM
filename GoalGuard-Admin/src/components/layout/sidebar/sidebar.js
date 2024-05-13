@@ -119,6 +119,12 @@ function Sidebar() {
       link: "/news-list",
       icon: <MessageOutlined />
     },
+    {
+      key: "order-list",
+      title: "Danh sách đặt sân",
+      link: "/order-list",
+      icon:<ShoppingOutlined />
+    },
   ];
 
   useEffect(() => {

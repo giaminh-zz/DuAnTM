@@ -49,7 +49,7 @@ exports.statistics = async (req, res) => {
     try {
         // Thực hiện truy vấn các bảng để lấy thông tin liên quan đến user_id cung cấp
         const [userData] = await db.execute('SELECT * FROM users WHERE id = ?', [userId]);
-        const [bookingData] = await db.execute('SELECT * FROM bookings WHERE user_id = ?', [userId]);
+        const [bookingData] = await db.execute('SELECT * FROM bookings INNER JOIN courts ON bookings.court_id = courts.id WHERE courts.id_users = ?', [userId]);
         const [orderData] = await db.execute('SELECT * FROM orders WHERE user_id = ?', [userId]);
         const [tournamentData] = await db.execute('SELECT * FROM tournaments WHERE id_users = ?', [userId]);
         const [productData] = await db.execute('SELECT * FROM products WHERE id_user = ?', [userId]);

@@ -78,6 +78,7 @@ const Profile = () => {
                             description: 'Cập nhật tài khoản thành công',
                         });
                         setVisibleModal(false)
+                        setUploadFile();
                     }
                 });
             handleList();

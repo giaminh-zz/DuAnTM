@@ -17,7 +17,12 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosClient.post("/contacts", formData);
+      await axiosClient.post("/notifications/createNotificationByEmail", {
+        full_name: formData.full_name,
+        emails: ["nguyenloi25012002@gmail.com"],
+        title: formData.subject + " Email người gửi: "+ formData.email + " Họ tên: " + formData.full_name,
+        content: formData.message
+    });
       // Handle success notification
       setFormData({
         full_name: "",

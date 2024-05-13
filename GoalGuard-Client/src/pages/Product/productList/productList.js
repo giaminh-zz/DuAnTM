@@ -53,11 +53,15 @@ const ProductList = () => {
       try {
         const response = await areaManagementApi.getAllAreas();
         setCategories(response);
-        await courtsManagementApi.getCourtByCategory(id).then((response) => {
-
-          // Cập nhật state với danh sách sản phẩm chỉ có trạng thái 'Available'
-          setProductDetail(response);
-        });
+        try {
+          const response = await courtsManagementApi.getCourtByCategory(id);
+          // Lọc dữ liệu có approval_status khác "pending"
+          const filteredResponse = response.filter(item => item.approval_status !== "pending");
+          setProductDetail(filteredResponse);
+      } catch (error) {
+          console.log('Failed to fetch court details:' + error);
+      }
+      
 
 
         setLoading(false);

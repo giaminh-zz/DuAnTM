@@ -14,4 +14,8 @@ router.get('/court/:court_id', bookingController.getBookingByCourtId);
 // API cập nhật trạng thái đặt sân
 router.put('/:id/update-status', bookingController.updateBookingStatus);
 
+router.get('/user/:user_id', bookingController.getBookingByUserID);
+
+router.get('/:id', bookingController.getBookingByID);
+
 module.exports = router;

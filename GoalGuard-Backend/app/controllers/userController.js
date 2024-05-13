@@ -79,37 +79,39 @@ const userController = {
     updateUser: async (req, res) => {
         try {
             const userId = req.params.id;
-            const { username, email, password, role, phone, status } = req.body;
-
+            const { username, email, password, role, phone, status, image_qr } = req.body;
+    
             const [checkEmailExist] = await db.execute('SELECT * FROM users WHERE email = ? AND id != ?', [email, userId]);
-
+    
             if (checkEmailExist.length > 0) {
                 return res.status(400).json({ message: 'Email already exists' });
             }
-
-            const updateQuery = 'UPDATE users SET username = ?, email = ?, password = ?, role = ?, phone = ?, status = ? WHERE id = ?';
-
+    
+            const updateQuery = 'UPDATE users SET username = ?, email = ?, password = ?, role = ?, phone = ?, status = ?, image_qr = ? WHERE id = ?';
+    
             const updatedValues = [
                 username || null,
                 email || null,
                 role || null,
                 phone || null,
                 status || null,
+                image_qr || null,
                 userId
             ];
-
+    
             const [result] = await db.execute(updateQuery, updatedValues);
-
+    
             if (result.affectedRows === 0) {
                 return res.status(404).json({ message: 'User not found' });
             }
-
+    
             res.status(200).json("Update success");
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
         }
     },
+    
 
 
     logout: async (req, res) => {
@@ -159,7 +161,8 @@ const userController = {
                             status: user[0].status,
                             image: user[0].image,
                             created_at: user[0].created_at,
-                            updated_at: user[0].updated_at
+                            updated_at: user[0].updated_at,
+                            image_qr: user[0].image_qr
                         },
                         iat: decodedToken.iat,
                         exp: decodedToken.exp
@@ -178,32 +181,33 @@ const userController = {
     updateProfile: async (req, res) => {
         try {
             const userId = req.params.id;
-            const { username, email, phone, status, image } = req.body;
-
-            const updateQuery = 'UPDATE users SET username = ?, email = ?,image = ?, phone = ?, status = ? WHERE id = ?';
-
+            const { username, email, phone, status, image, image_qr } = req.body;
+    
+            const updateQuery = 'UPDATE users SET username = ?, email = ?, image = ?, image_qr = ?, phone = ?, status = ? WHERE id = ?';
+    
             const updatedValues = [
                 username || null,
                 email || null,
                 image || null,
+                image_qr || null,
                 phone || null,
                 status || null,
                 userId
             ];
-
+    
             const [result] = await db.execute(updateQuery, updatedValues);
-
+    
             if (result.affectedRows === 0) {
                 return res.status(404).json({ message: 'User not found' });
             }
-
+    
             res.status(200).json("Profile updated successfully");
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
         }
     },
-
+    
     changePassword: async (req, res) => {
         try {
             const userId = req.params.id;
@@ -234,6 +238,25 @@ const userController = {
             await db.execute(updateQuery, updatedValues);
 
             res.status(200).json("Password changed successfully");
+        } catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    },
+
+    getUserById: async (req, res) => {
+        try {
+            const userId = req.params.id;
+    
+            // Thực hiện truy vấn để lấy thông tin người dùng dựa trên userId
+            const [user] = await db.execute('SELECT * FROM users WHERE id = ?', [userId]);
+    
+            if (user.length === 0) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+    
+            // Trả về thông tin người dùng
+            res.status(200).json(user[0]);
         } catch (err) {
             console.log(err);
             res.status(500).json(err);

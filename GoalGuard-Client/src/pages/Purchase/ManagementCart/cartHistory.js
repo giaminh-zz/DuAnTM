@@ -9,6 +9,8 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import axiosClient from "../../../apis/axiosClient";
 import bookingApi from "../../../apis/bookingApi";
+import html2pdf from 'html2pdf.js';
+
 import "./cartHistory.css";
 
 const CartHistory = () => {
@@ -65,8 +67,79 @@ const CartHistory = () => {
     }
 
     const handlePrintInvoice = (order) => {
-        // Code để in hóa đơn
+        const formattedDate = moment(order.booking_date).format('DD/MM/YYYY HH:mm');
+
+        const htmlContent = `
+            <html>
+                <head>
+                    <title>Hóa đơn</title>
+                    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+                    <style>
+                        .invoice {
+                            width: 100%;
+                            margin: 0 auto;
+                            padding: 1rem;
+                            background-color: #fff;
+                            border: 1px solid #ccc;
+                            border-radius: 0.5rem;
+                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        }
+    
+                        .invoice-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 1rem;
+                        }
+    
+                        .invoice-header h1 {
+                            font-size: 2rem;
+                            font-weight: bold;
+                            color: #333;
+                        }
+    
+                        .invoice-details {
+                            margin-bottom: 1rem;
+                        }
+    
+                        .invoice-details p {
+                            margin: 0.5rem 0;
+                        }
+    
+                        .invoice-total {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            font-weight: bold;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="invoice">
+                        <div class="invoice-header">
+                            <h1>Hóa đơn bán hàng</h1>
+                            <p>Ngày: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        <div class="invoice-details">
+                            <p><span class="font-semibold">Tên sân:</span> ${order.name}</p>
+                            <p><span class="font-semibold">Ngày đặt:</span> ${formattedDate}</p>
+                            <p><span class="font-semibold">Giờ bắt đầu:</span> ${order.start_time}</p>
+                            <p><span class="font-semibold">Giờ kết thúc:</span> ${order.end_time}</p>
+                        </div>
+                        <div class="invoice-total">
+                            <span>Tổng tiền:</span>
+                            <span>${order.total_amount}</span>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        `;
+    
+        html2pdf().from(htmlContent).save(`invoice_${order.id}.pdf`);
     };
+
+    
+      
 
 
     const columns = [
@@ -108,32 +181,14 @@ const CartHistory = () => {
         },
        
         {
-            title: "Trạng thái",
-            dataIndex: "status",
-            key: "status",
+            title: 'Trạng thái',
+            key: 'status',
+            dataIndex: 'status',
             render: (slugs) => (
-                <span>
-                    {slugs === "rejected" ? (
-                        <Tag style={{ width: 150, textAlign: "center" }} color="red">
-                            Đã hủy
-                        </Tag>
-                    ) : slugs === "approved" ? (
-                        <Tag
-                            style={{ width: 150, textAlign: "center" }}
-                            color="geekblue"
-                            key={slugs}
-                        >
-                            Vận chuyển
-                        </Tag>
-                    ) : slugs === "final" ? (
-                        <Tag color="green" style={{ width: 150, textAlign: "center" }}>
-                            Đã giao - Đã thanh toán
-                        </Tag>
-                    ) : (
-                        <Tag color="blue" style={{ width: 150, textAlign: "center" }}>
-                            Đợi xác nhận
-                        </Tag>
-                    )}
+                <span >
+                    {slugs === "rejected" ? <Tag style={{ width: 170, textAlign: "center" }} color="red">Đã hủy</Tag> : slugs === "approved" ? <Tag style={{ width: 170, textAlign: "center" }} color="geekblue" key={slugs}>
+                       Đang xem xét
+                    </Tag> : slugs === "final" ? <Tag color="green" style={{ width: 170, textAlign: "center" }}>Đã xác nhận - Đã thanh toán</Tag> : <Tag color="blue" style={{ width: 170, textAlign: "center" }}>Đợi xác nhận</Tag>}
                 </span>
             ),
         },
@@ -146,7 +201,7 @@ const CartHistory = () => {
                     type="primary"
                     onClick={() => handlePrintInvoice(record)}
                 >
-                    In hóa đơn
+                    Xuất hóa đơn
                 </Button>
             ),
         },
