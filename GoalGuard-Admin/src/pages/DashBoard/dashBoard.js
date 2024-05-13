@@ -296,21 +296,6 @@ const DashBoard = () => {
                                 </Col>
                             </Row>
 
-                            <Row gutter={12} style={{ marginTop: 20 }}>
-                                <Col span={6}>
-                                    <Card className="card_total" bordered={false}>
-                                        <div className='card_number'>
-                                            <div>
-                                                <div className='number_total'>{product?.orders?.length || 0}</div>
-                                                <div className='title_total'>Số lượt order dịch vụ</div>
-                                            </div>
-                                            <div>
-                                                <FolderOpenTwoTone style={{ fontSize: 48 }} />
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </Col>
-                            </Row>
                         </>
                     }
                 </div>
