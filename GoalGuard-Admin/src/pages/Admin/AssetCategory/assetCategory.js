@@ -49,7 +49,7 @@ const AssetCategory = () => {
         setLoading(true);
         try {
             return fieldtypesApi.addFieldType(values.type, values.status,).then(response => {
-                if (response.error == "Tên loại sân đã tồn tại.") {
+                if (response.message == "Loại sân bóng đã tồn tại") {
                     setLoading(false);
                     return notification["error"]({
                         message: `Thông báo`,
@@ -86,7 +86,7 @@ const AssetCategory = () => {
         setLoading(true);
         try {
             return fieldtypesApi.updateFieldType(id, values.type, values.status).then(response => {
-                if (response.error == "Tên loại loại sân đã tồn tại.") {
+                if (response.message == "Loại sân bóng đã tồn tại") {
                     setLoading(false);
                     return notification["error"]({
                         message: `Thông báo`,

@@ -4,16 +4,25 @@ const db = require('../config/db');
 exports.addProduct = async (req, res) => {
     try {
         const { name, price, quantity, status, itemStatus, id_product_type, id_users, image } = req.body;
+
+        // Kiểm tra xem tên sản phẩm đã tồn tại trong cơ sở dữ liệu chưa
+        const [existingProducts] = await db.execute('SELECT id FROM products WHERE name = ?', [name]);
+        if (existingProducts.length > 0) {
+            return res.status(200).json({ message: 'Tên dịch vụ đã tồn tại' });
+        }
+
+        // Tiến hành thêm sản phẩm mới
         const [result] = await db.execute(
             'INSERT INTO products (name, price, quantity, status, item_status, id_product_type, id_user, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [name, price, quantity, status, itemStatus, id_product_type, id_users, image]
         );
         res.status(200).json({ id: result.insertId, name, price, quantity, status, itemStatus, id_product_type, id_users, image });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Error adding product' });
     }
 };
+
 
 exports.updateProduct = async (req, res) => {
     try {
@@ -25,6 +34,15 @@ exports.updateProduct = async (req, res) => {
         }
         // Lấy dữ liệu mới từ req.body
         const { name, price, quantity, status, itemStatus, id_product_type, id_user, image } = req.body;
+
+        // Kiểm tra xem tên sản phẩm mới không trùng với các tên sản phẩm khác (trừ chính sản phẩm đang cập nhật)
+        if (name !== undefined) {
+            const [existingProducts] = await db.execute('SELECT id FROM products WHERE name = ? AND id != ?', [name, id]);
+            if (existingProducts.length > 0) {
+                return res.status(200).json({ message: 'Tên dịch vụ đã tồn tại' });
+            }
+        }
+
         // Tạo một đối tượng chứa các trường dữ liệu mới cần cập nhật
         const updatedFields = {};
         // So sánh và cập nhật các trường dữ liệu mới
@@ -56,7 +74,7 @@ exports.updateProduct = async (req, res) => {
             return res.status(400).json({ message: 'No fields to update' });
         }
         const values = Object.values(updatedFields);
-        values.push(id); 
+        values.push(id);
         const updateQuery = `UPDATE products SET ${Object.keys(updatedFields).map(field => `${field} = ?`).join(', ')} WHERE id = ?`;
         await db.execute(updateQuery, values);
         res.status(200).json({ id, ...updatedFields });

@@ -49,7 +49,7 @@ const AreaManagement = () => {
         setLoading(true);
         try {
             return areaManagementApi.addArea(values.name, values.status,).then(response => {
-                if (response.error == "Tên khu vực đã tồn tại.") {
+                if (response.message == "Tên khu vực đã tồn tại") {
                     setLoading(false);
                     return notification["error"]({
                         message: `Thông báo`,
@@ -86,7 +86,7 @@ const AreaManagement = () => {
         setLoading(true);
         try {
             return areaManagementApi.updateArea(id, values.name, values.status).then(response => {
-                if (response.error == "Tên loại khu vực đã tồn tại.") {
+                if (response.messs == "Tên khu vực đã tồn tại") {
                     setLoading(false);
                     return notification["error"]({
                         message: `Thông báo`,

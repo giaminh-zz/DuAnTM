@@ -3,6 +3,14 @@ const db = require('../config/db');
 exports.addFieldType = async (req, res) => {
     try {
         const { type, status } = req.body;
+
+        // Kiểm tra xem loại sân bóng đã tồn tại trong cơ sở dữ liệu chưa
+        const [existingFieldTypes] = await db.execute('SELECT id FROM field_types WHERE type = ?', [type]);
+        if (existingFieldTypes.length > 0) {
+            return res.status(200).json({ message: 'Loại sân bóng đã tồn tại' });
+        }
+
+        // Tiến hành thêm loại sân bóng mới
         const [result] = await db.execute('INSERT INTO field_types (type, status) VALUES (?, ?)', [type, status]);
         res.status(200).json({ id: result.insertId, type, status });
     } catch (error) {
@@ -11,17 +19,29 @@ exports.addFieldType = async (req, res) => {
     }
 };
 
+
 exports.updateFieldType = async (req, res) => {
     try {
-        const { type, status } = req.body;
+        const { type } = req.body;
         const id = req.params.id;
-        await db.execute('UPDATE field_types SET type = ?, status = ? WHERE id = ?', [type, status, id]);
-        res.status(200).json({ id, type, status });
+
+        // Kiểm tra xem loại sân bóng mới không trùng với các loại sân bóng khác (trừ chính loại sân bóng đang cập nhật)
+        if (type !== undefined) {
+            const [existingFieldTypes] = await db.execute('SELECT id FROM field_types WHERE type = ? AND id != ?', [type, id]);
+            if (existingFieldTypes.length > 0) {
+                return res.status(200).json({ message: 'Loại sân bóng đã tồn tại' });
+            }
+        }
+
+        // Tiếp tục quá trình cập nhật loại sân bóng
+        await db.execute('UPDATE field_types SET type = ? WHERE id = ?', [type, id]);
+        res.status(200).json({ id, type });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating field type' });
     }
 };
+
 
 exports.deleteFieldType = async (req, res) => {
     try {

@@ -4,6 +4,14 @@ const db = require('../config/db');
 exports.addArea = async (req, res) => {
     try {
         const { name, status } = req.body;
+
+        // Kiểm tra xem tên khu vực đã tồn tại trong cơ sở dữ liệu chưa
+        const [existingAreas] = await db.execute('SELECT id FROM areas WHERE name = ?', [name]);
+        if (existingAreas.length > 0) {
+            return res.status(200).json({ message: 'Tên khu vực đã tồn tại' });
+        }
+
+        // Tiến hành thêm khu vực mới
         const [result] = await db.execute('INSERT INTO areas (name, status) VALUES (?, ?)', [name, status]);
         res.status(200).json({ id: result.insertId, name, status });
     } catch (error) {
@@ -15,10 +23,20 @@ exports.addArea = async (req, res) => {
 // Sửa thông tin khu vực
 exports.updateArea = async (req, res) => {
     try {
-        const { name, status } = req.body;
+        const { name } = req.body;
         const id = req.params.id;
-        await db.execute('UPDATE areas SET name = ?, status = ? WHERE id = ?', [name, status, id]);
-        res.status(200).json({ id, name, status });
+
+        // Kiểm tra xem tên khu vực mới không trùng với các tên khu vực khác (trừ chính khu vực đang cập nhật)
+        if (name !== undefined) {
+            const [existingAreas] = await db.execute('SELECT id FROM areas WHERE name = ? AND id != ?', [name, id]);
+            if (existingAreas.length > 0) {
+                return res.status(200).json({ message: 'Tên khu vực đã tồn tại' });
+            }
+        }
+
+        // Tiếp tục quá trình cập nhật khu vực
+        await db.execute('UPDATE areas SET name = ? WHERE id = ?', [name, id]);
+        res.status(200).json({ id, name });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error updating area' });

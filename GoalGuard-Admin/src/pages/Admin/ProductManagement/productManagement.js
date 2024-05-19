@@ -62,7 +62,7 @@ const ProductManagement = () => {
                 "status": "active"
             };
             return productApi.addProduct(categoryList).then(response => {
-                if (response.message === "Asset with the same name already exists") {
+                if (response.message === "Tên dịch vụ đã tồn tại") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
@@ -108,7 +108,7 @@ const ProductManagement = () => {
                 "status": "active"
             };
             return productApi.updateProduct(categoryList, id).then(response => {
-                if (response.message === "Asset with the same name already exists") {
+                if (response.message === "Tên dịch vụ đã tồn tại") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
