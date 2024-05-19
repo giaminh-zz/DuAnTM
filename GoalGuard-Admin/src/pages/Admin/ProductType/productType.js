@@ -49,7 +49,7 @@ const ProductType = () => {
         setLoading(true);
         try {
             return productTypeApi.addProductType(values.name, values.status,).then(response => {
-                if (response.error == "Tên loại dịch vụ đã tồn tại.") {
+                if (response.message == "Loại hàng hóa đã tồn tại") {
                     setLoading(false);
                     return notification["error"]({
                         message: `Thông báo`,
@@ -86,7 +86,7 @@ const ProductType = () => {
         setLoading(true);
         try {
             return productTypeApi.updateProductType(id, values.name, values.status).then(response => {
-                if (response.error == "Tên loại loại dịch vụ đã tồn tại.") {
+                if (response.message == "Loại hàng hóa đã tồn tại") {
                     setLoading(false);
                     return notification["error"]({
                         message: `Thông báo`,
