@@ -4,6 +4,14 @@ const db = require('../config/db');
 exports.addCourt = async (req, res) => {
     try {
         const { name, id_areas, id_field_types, id_users, status, price, image, description } = req.body;
+        
+        // Kiểm tra xem tên sân đã tồn tại trong cơ sở dữ liệu chưa
+        const [existingCourts] = await db.execute('SELECT id FROM courts WHERE name = ?', [name]);
+        if (existingCourts.length > 0) {
+            return res.status(200).json({ message: 'Tên sân đã tồn tại' });
+        }
+
+        // Tiến hành thêm sân mới
         const [result] = await db.execute(
             'INSERT INTO courts (name, id_areas, id_field_types, id_users, status, price, image, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [name, id_areas, id_field_types, id_users, status, price, image, description]
@@ -15,6 +23,7 @@ exports.addCourt = async (req, res) => {
     }
 };
 
+
 // Sửa thông tin sân
 exports.updateCourt = async (req, res) => {
     try {
@@ -25,6 +34,14 @@ exports.updateCourt = async (req, res) => {
         for (const key in req.body) {
             if (req.body.hasOwnProperty(key)) {
                 updates[key] = req.body[key];
+            }
+        }
+
+        // Kiểm tra xem tên sân mới không trùng với các tên sân khác (trừ chính sân đang cập nhật)
+        if (updates.hasOwnProperty('name')) {
+            const [existingCourts] = await db.execute('SELECT id FROM courts WHERE name = ? AND id != ?', [updates.name, id]);
+            if (existingCourts.length > 0) {
+                return res.status(200).json({ message: 'Tên sân đã tồn tại' });
             }
         }
 
@@ -43,6 +60,7 @@ exports.updateCourt = async (req, res) => {
         res.status(500).json({ message: 'Error updating court' });
     }
 };
+
 
 // Xóa sân
 exports.deleteCourt = async (req, res) => {

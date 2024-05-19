@@ -67,7 +67,7 @@ const AssetManagement = () => {
                 "status": values.status
             };
             return courtsManagementApi.addCourt(categoryList).then(response => {
-                if (response.message === "Asset with the same name already exists") {
+                if (response.message === "Tên sân đã tồn tại") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
@@ -114,7 +114,7 @@ const AssetManagement = () => {
                 "status": values.status
             };
             return courtsManagementApi.updateCourt(categoryList, id).then(response => {
-                if (response.message === "Asset with the same name already exists") {
+                if (response.message === "Tên sân đã tồn tại") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
