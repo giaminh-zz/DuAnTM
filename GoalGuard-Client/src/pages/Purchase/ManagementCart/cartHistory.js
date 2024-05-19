@@ -172,7 +172,7 @@ const CartHistory = () => {
             key: "total_amount",
             render: (products) => (
                 <div>
-                    {products?.toLocaleString("vi", {
+                    {Number(products)?.toLocaleString("vi", {
                         style: "currency",
                         currency: "VND",
                     })}
