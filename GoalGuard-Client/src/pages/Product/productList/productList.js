@@ -58,10 +58,10 @@ const ProductList = () => {
           // Lọc dữ liệu có approval_status khác "pending"
           const filteredResponse = response.filter(item => item.approval_status !== "pending");
           setProductDetail(filteredResponse);
-      } catch (error) {
+        } catch (error) {
           console.log('Failed to fetch court details:' + error);
-      }
-      
+        }
+
 
 
         setLoading(false);
@@ -128,6 +128,8 @@ const ProductList = () => {
                     key={item.id}
                     style={{ cursor: 'pointer' }}
                   >
+                   
+
                     <div className="show-product">
                       {item.image ? (
                         <img
@@ -144,23 +146,20 @@ const ProductList = () => {
                       )}
                       <div className='wrapper-products'>
                         <Paragraph
-                          className='title-product'
-                          ellipsis={{ rows: 2 }}
+                          className='title-product overflow-ellipsis overflow-hidden whitespace-nowrap'
                         >
                           {item.name}
                         </Paragraph>
 
-                        <div>Khu vực: {item.area}</div>
-                        <div>Loại sân: {item.field_type}</div>
+                        <div className="truncate">Khu vực: {item.area}</div>
+                        <div className="truncate">Loại sân: {item.field_type}</div>
 
                         <div className="price-amount">
                           <Paragraph className='price-product'>
-                            {numberWithCommas(item.price)}đ/giờ
+                            {numberWithCommas(Number(item.price))}đ/giờ
                           </Paragraph>
                         </div>
                       </div>
-
-
                     </div>
                   </div>
                 ))}

@@ -174,23 +174,22 @@ const Home = () => {
                                     )}
                                     <div className='wrapper-products'>
                                         <Paragraph
-                                            className='title-product'
-                                            ellipsis={{ rows: 2 }}
+                                            className='title-product overflow-ellipsis overflow-hidden whitespace-nowrap'
                                         >
                                             {item.name}
                                         </Paragraph>
 
-                                        <div>Khu vực: {item.area}</div>
-                                        <div>Loại sân: {item.field_type}</div>
+                                        <div className="truncate">Khu vực: {item.area}</div>
+                                        <div className="truncate">Loại sân: {item.field_type}</div>
 
                                         <div className="price-amount">
                                             <Paragraph className='price-product'>
-                                                {numberWithCommas(item.price)}đ/giờ
+                                                {numberWithCommas(Number(item.price))}đ/giờ
                                             </Paragraph>
                                         </div>
                                     </div>
-
                                 </div>
+
                             </div>
                         ))}
                     </div>
@@ -202,43 +201,37 @@ const Home = () => {
                     <div>bạn nên chọn chúng tôi</div>
                 </div>
                 <div className="card_wrap container-home container flex justify-center">
-    <div>
-        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
-            <img src={service6} alt="Sân bóng tiện ích" className="mx-auto"></img>
-            <p className="card-text mt-3 fw-bold text-center">Tiện ích đầy đủ <br /> và hiện đại</p>
-        </Card>
-    </div>
-    <div>
-        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
-            <img src={service7} alt="Chất lượng sân bóng" className="mx-auto"></img>
-            <p className="card-text mt-3 fw-bold text-center">Chất lượng sân bóng <br /> tốt nhất</p>
-        </Card>
-    </div>
-    <div>
-        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
-            <img src={service8} alt="Dịch vụ chuyên nghiệp" className="mx-auto"></img>
-            <p className="card-text mt-3 fw-bold text-center">Dịch vụ chuyên nghiệp <br /> và thân thiện</p>
-        </Card>
-    </div>
-    <div>
-        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
-            <img src={service9} alt="Đặt lịch linh hoạt" className="mx-auto"></img>
-            <p className="card-text mt-3 fw-bold text-center">Đặt lịch linh hoạt <br /> và nhanh chóng</p>
-        </Card>
-    </div>
-    <div>
-        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
-            <img src={service10} alt="Hỗ trợ 24/7" className="mx-auto"></img>
-            <p className="card-text mt-3 fw-bold text-center">Hỗ trợ 24/7 <br /> đảm bảo trải nghiệm <br /> tốt nhất</p>
-        </Card>
-    </div>
-</div>
-
-
-
-
-
-
+                    <div>
+                        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
+                            <img src={service6} alt="Sân bóng tiện ích" className="mx-auto"></img>
+                            <p className="card-text mt-3 fw-bold text-center">Tiện ích đầy đủ <br /> và hiện đại</p>
+                        </Card>
+                    </div>
+                    <div>
+                        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
+                            <img src={service7} alt="Chất lượng sân bóng" className="mx-auto"></img>
+                            <p className="card-text mt-3 fw-bold text-center">Chất lượng sân bóng <br /> tốt nhất</p>
+                        </Card>
+                    </div>
+                    <div>
+                        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
+                            <img src={service8} alt="Dịch vụ chuyên nghiệp" className="mx-auto"></img>
+                            <p className="card-text mt-3 fw-bold text-center">Dịch vụ chuyên nghiệp <br /> và thân thiện</p>
+                        </Card>
+                    </div>
+                    <div>
+                        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
+                            <img src={service9} alt="Đặt lịch linh hoạt" className="mx-auto"></img>
+                            <p className="card-text mt-3 fw-bold text-center">Đặt lịch linh hoạt <br /> và nhanh chóng</p>
+                        </Card>
+                    </div>
+                    <div>
+                        <Card bordered={false} className="card_suggest card_why card_slogan flex flex-col items-center">
+                            <img src={service10} alt="Hỗ trợ 24/7" className="mx-auto"></img>
+                            <p className="card-text mt-3 fw-bold text-center">Hỗ trợ 24/7 <br /> đảm bảo trải nghiệm <br /> tốt nhất</p>
+                        </Card>
+                    </div>
+                </div>
 
                 <div className="image-footer">
                     <OverPack style={{ overflow: 'hidden', height: 800, marginTop: 20 }} >

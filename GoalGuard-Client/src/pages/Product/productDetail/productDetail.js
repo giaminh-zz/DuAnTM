@@ -238,7 +238,7 @@ const ProductDetail = () => {
                                     style={{ width: "90%" }}
                                 >
                                     <div className="price_product" >
-                                        {productDetail?.price?.toLocaleString("vi", {
+                                        {Number(productDetail?.price)?.toLocaleString("vi", {
                                             style: "currency",
                                             currency: "VND",
                                         })}đ/giờ

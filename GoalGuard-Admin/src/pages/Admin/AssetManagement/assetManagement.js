@@ -158,15 +158,47 @@ const AssetManagement = () => {
     };
 
     const handleCategoryList = async () => {
-        try {
-            await courtsManagementApi.getAllCourts().then((res) => {
-                setCategory(res);
+            try {
+
+                // Lấy tất cả các khu vực có trạng thái là "active"
+                const areaResponse = await areaManagementApi.getAllAreas();
+                console.log(areaResponse);
+                const activeAreas = areaResponse.filter(area => area.status === 'active');
+                setArea(activeAreas);
+
+                // Lấy tất cả các loại sân có trạng thái là "active"
+                const fieldTypesResponse = await fieldtypesApi.getAllFieldTypes();
+                console.log(fieldTypesResponse);
+                const activeFieldTypes = fieldTypesResponse.filter(fieldType => fieldType.status === 'active');
+                setFieldTypes(activeFieldTypes);
+
                 setLoading(false);
-            });
-            ;
-        } catch (error) {
-            console.log('Failed to fetch event list:' + error);
-        };
+
+                const response = await userApi.getProfile();
+                console.log(response);
+                setUserData(response.user);
+
+                const createdById = response.user.id;
+
+                if (response.user.role == "isAdmin") {
+
+                    await courtsManagementApi.getAllCourts().then((res) => {
+                        console.log(res);
+                        setCategory(res);
+                        setLoading(false);
+                    });
+                } else {
+                    await courtsManagementApi.getCourtByUserId(createdById).then((res) => {
+                        console.log(res);
+                        setCategory(res);
+                        setLoading(false);
+                    });
+                }
+
+                ;
+            } catch (error) {
+                console.log('Failed to fetch category list:' + error);
+            }
     }
 
     const handleDeleteCategory = async (id) => {
