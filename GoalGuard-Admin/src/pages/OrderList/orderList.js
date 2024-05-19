@@ -85,7 +85,7 @@ const OrderList = () => {
             const categoryList = {
                 "status": values.status
             }
-            await axiosClient.put("/booking/" +id + "/update-status/", categoryList).then(response => {
+            await axiosClient.put("/booking/" + id + "/update-status/", categoryList).then(response => {
                 if (response === undefined) {
                     notification["error"]({
                         message: `Thông báo`,
@@ -169,17 +169,22 @@ const OrderList = () => {
         },
         {
             title: 'Tên người đặt',
-            dataIndex: 'user_name', 
+            dataIndex: 'user_name',
             key: 'user_name',
         },
         {
+            title: 'Số điện thoại',
+            dataIndex: 'phone',
+            key: 'phone',
+        },
+        {
             title: 'Tên sân',
-            dataIndex: 'court_name', 
+            dataIndex: 'court_name',
             key: 'court_name',
         },
         {
             title: 'Chủ sân',
-            dataIndex: 'owner_name', 
+            dataIndex: 'owner_name',
             key: 'owner_name',
         },
         {
@@ -217,7 +222,7 @@ const OrderList = () => {
             render: (slugs) => (
                 <span >
                     {slugs === "rejected" ? <Tag style={{ width: 170, textAlign: "center" }} color="red">Đã hủy</Tag> : slugs === "approved" ? <Tag style={{ width: 170, textAlign: "center" }} color="geekblue" key={slugs}>
-                       Đang xem xét
+                        Đang xem xét
                     </Tag> : slugs === "final" ? <Tag color="green" style={{ width: 170, textAlign: "center" }}>Đã xác nhận - Đã thanh toán</Tag> : <Tag color="blue" style={{ width: 170, textAlign: "center" }}>Đợi xác nhận</Tag>}
                 </span>
             ),
@@ -286,7 +291,7 @@ const OrderList = () => {
                             >
                                 <Row>
                                     <Col span="18">
-                                      
+
                                     </Col>
                                     <Col span="6">
                                         <Row justify="end">
@@ -301,8 +306,8 @@ const OrderList = () => {
                     </div>
 
                     <div style={{ marginTop: 30 }}>
-                        <Table     scroll={{ x: true }}
- columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={order} scroll={{ x: 1500 }} />
+                        <Table scroll={{ x: true }}
+                            columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={order} />
                     </div>
                 </div>
 

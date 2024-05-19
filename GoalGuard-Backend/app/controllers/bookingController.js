@@ -81,6 +81,7 @@ exports.getBookingByUserID = async (req, res) => {
                 bookings.*, 
                 courts.name AS court_name,
                 users.username AS user_name,
+                users.phone AS phone,
                 owners.username AS owner_name
             FROM bookings
             INNER JOIN courts ON bookings.court_id = courts.id
