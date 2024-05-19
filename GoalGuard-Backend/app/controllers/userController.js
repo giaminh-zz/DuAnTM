@@ -181,19 +181,42 @@ const userController = {
     updateProfile: async (req, res) => {
         try {
             const userId = req.params.id;
-            const { username, email, phone, status, image, image_qr } = req.body;
+            const { username, email, phone, status, image, role } = req.body;
     
-            const updateQuery = 'UPDATE users SET username = ?, email = ?, image = ?, image_qr = ?, phone = ?, status = ? WHERE id = ?';
+            const updateFields = [];
+            const updatedValues = [];
     
-            const updatedValues = [
-                username || null,
-                email || null,
-                image || null,
-                image_qr || null,
-                phone || null,
-                status || null,
-                userId
-            ];
+            if (username) {
+                updateFields.push('username = ?');
+                updatedValues.push(username);
+            }
+            if (email) {
+                updateFields.push('email = ?');
+                updatedValues.push(email);
+            }
+            if (phone) {
+                updateFields.push('phone = ?');
+                updatedValues.push(phone);
+            }
+            if (status) {
+                updateFields.push('status = ?');
+                updatedValues.push(status);
+            }
+            if (image) {
+                updateFields.push('image = ?');
+                updatedValues.push(image);
+            }
+            if (role) {
+                updateFields.push('role = ?');
+                updatedValues.push(role);
+            }
+    
+            if (updateFields.length === 0) {
+                return res.status(400).json({ message: 'No fields to update' });
+            }
+    
+            const updateQuery = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
+            updatedValues.push(userId);
     
             const [result] = await db.execute(updateQuery, updatedValues);
     

@@ -20,8 +20,8 @@ const userApi = {
                 password,
             })
             .then(response => {
-                console.log(response);
-                if (response.status) {
+                console.log(response.user.role );
+                if (response.user.status !== "noactive") {
                     localStorage.setItem("token", response.token);
                     localStorage.setItem("user", JSON.stringify(response.user));
                 }
@@ -35,7 +35,7 @@ const userApi = {
     },
 
     getProfileByID(id) {
-        const url = '/user/profile/'+ id;
+        const url = '/user/profile/' + id;
         return axiosClient.get(url);
     },
 

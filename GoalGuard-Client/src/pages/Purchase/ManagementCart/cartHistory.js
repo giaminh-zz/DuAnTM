@@ -197,12 +197,14 @@ const CartHistory = () => {
             dataIndex: 'order',
             key: 'order',
             render: (text, record) => (
-                <Button
-                    type="primary"
-                    onClick={() => handlePrintInvoice(record)}
-                >
-                    Xuất hóa đơn
-                </Button>
+                record.status === 'final' ? (
+                    <Button
+                        type="primary"
+                        onClick={() => handlePrintInvoice(record)}
+                    >
+                        Xuất hóa đơn
+                    </Button>
+                ) : null
             ),
         },
         // {
