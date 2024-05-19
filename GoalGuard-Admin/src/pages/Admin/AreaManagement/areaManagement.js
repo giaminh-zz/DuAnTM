@@ -143,11 +143,11 @@ const AreaManagement = () => {
         setLoading(true);
         try {
             await areaManagementApi.deleteArea(id).then(response => {
-                if (response.message === "Cannot delete the asset because it is referenced in another process or event.") {
+                if (response.message === "Không thể xóa khu vực do đang có hàng khác tham chiếu đến") {
                     notification["error"]({
                         message: `Thông báo`,
                         description:
-                            "Không thể xóa vì nó đã được sử dụng trong một sự kiện hoặc quá trình khác.",
+                            "Không thể xóa khu vực do đang có hàng khác tham chiếu đến",
 
                     });
                     setLoading(false);

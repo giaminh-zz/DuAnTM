@@ -48,12 +48,23 @@ exports.deleteArea = async (req, res) => {
     try {
         const id = req.params.id;
         await db.execute('DELETE FROM areas WHERE id = ?', [id]);
-        res.status(200).json({ message: 'Area deleted successfully' });
+        res.status(200).json({ message: 'Khu vực đã được xóa thành công' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error deleting area' });
+        if (error.code === 'ER_NO_SUCH_TABLE') {
+            // Nếu bảng không tồn tại, không có khóa ngoại cần kiểm tra
+            res.status(500).json({ message: 'Bảng không tồn tại' });
+        } else if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            // Nếu có hàng tham chiếu, không thể xóa khu vực do có khóa ngoại
+            res.status(200).json({ message: 'Không thể xóa khu vực do đang có hàng khác tham chiếu đến' });
+        } else {
+            // Trường hợp khác, trả về thông báo lỗi chung
+            res.status(500).json({ message: 'Lỗi khi xóa khu vực' });
+        }
     }
 };
+
+
 
 // Lấy thông tin khu vực theo id
 exports.getAreaById = async (req, res) => {
