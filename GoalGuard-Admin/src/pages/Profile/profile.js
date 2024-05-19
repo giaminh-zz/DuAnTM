@@ -188,7 +188,7 @@ const Profile = () => {
                                     errorMessage={errorMessage}
                                     data={data}
                                     lang="en"
-                                    locationLabel="Hà Nội"
+                                    locationLabel="Đà Nẵng"
                                     unitsLabels={{ temperature: 'C', windSpeed: 'Km/h' }}
                                     showForecast
                                 />
