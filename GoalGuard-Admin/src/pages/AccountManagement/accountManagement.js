@@ -380,6 +380,8 @@ const AccountManagement = () => {
                         <div id="account_container">
                             <Card title="Quản lý tài khoản" bordered={false} >
                                 <Table columns={columns} dataSource={user} pagination={{ position: ['bottomCenter'] }}
+                                    scroll={{ x: true }}
+
                                 />
                             </Card>
                         </div>

@@ -329,7 +329,8 @@ const AssetCategory = () => {
                     </div>
 
                     <div style={{ marginTop: 30 }}>
-                        <Table columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={category} />
+                        <Table columns={columns}     scroll={{ x: true }}
+ pagination={{ position: ['bottomCenter'] }} dataSource={category} />
                     </div>
                 </div>
 

@@ -214,7 +214,8 @@ const Visitors = () => {
                     </div>
 
                     <div style={{ marginTop: 30 }}>
-                        <Table columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={newsList} />
+                        <Table     scroll={{ x: true }}
+columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={newsList} />
                     </div>
 
                     <Modal

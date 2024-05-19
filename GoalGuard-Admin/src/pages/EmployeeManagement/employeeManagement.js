@@ -394,7 +394,8 @@ const EmployeeManagement = () => {
                     <div id="account">
                         <div id="account_container">
                             <Card title="Quản lý nhân viên" bordered={false} >
-                                <Table columns={columns} dataSource={user} pagination={{ position: ['bottomCenter'] }}
+                                <Table      scroll={{ x: true }}
+ columns={columns} dataSource={user} pagination={{ position: ['bottomCenter'] }}
                                 />
                             </Card>
                         </div>

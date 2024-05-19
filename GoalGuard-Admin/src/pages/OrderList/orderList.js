@@ -301,7 +301,8 @@ const OrderList = () => {
                     </div>
 
                     <div style={{ marginTop: 30 }}>
-                        <Table columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={order} scroll={{ x: 1500 }} />
+                        <Table     scroll={{ x: true }}
+ columns={columns} pagination={{ position: ['bottomCenter'] }} dataSource={order} scroll={{ x: 1500 }} />
                     </div>
                 </div>
 
