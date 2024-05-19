@@ -37,16 +37,17 @@ const ProductList = () => {
     window.location.reload();
   };
 
-
-
-
   const handleSearchClick = async () => {
-    await courtsManagementApi.getAllCourts().then((response) => {
-
-      // Cập nhật state với danh sách sản phẩm chỉ có trạng thái 'Available'
-      setProductDetail(response);
-    });
+    try {
+      const response = await courtsManagementApi.getAllCourts();
+      const approvedProducts = response.filter(product => product.approval_status === 'approved');
+  
+      setProductDetail(approvedProducts);
+    } catch (error) {
+      console.error("Error fetching courts data: ", error);
+    }
   };
+  
 
   useEffect(() => {
     (async () => {
