@@ -57,15 +57,15 @@ const ProductType = () => {
                             'Tên loại dịch vụ đã tồn tại.',
 
                     });
-                }
+                }   
 
-                if (response === undefined) {
-                    notification["error"]({
-                        message: `Thông báo`,
-                        description:
-                            'Tạo loại dịch vụ thất bại',
-                    });
-                }
+                    if (response === undefined) {
+                        notification["error"]({
+                            message: `Thông báo`,
+                            description:
+                                'Tạo loại dịch vụ thất bại',
+                        });
+                    }
                 else {
                     notification["success"]({
                         message: `Thông báo`,
@@ -276,7 +276,7 @@ const ProductType = () => {
     useEffect(() => {
         (async () => {
             try {
-                await productTypeApi.getAllProductTypes().then((res) => {
+                await productTypeApi.getAllProductTypes().then((res) => {   
                     console.log(res);
                     setCategory(res);
                     setLoading(false);
